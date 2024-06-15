@@ -25,6 +25,7 @@ net=get_net(device=device,net_class=Net)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
+timer=Timer(300)
 for epoch in range(num_epochs):
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -40,6 +41,9 @@ for epoch in range(num_epochs):
         if i % 2000 == 1999:
             print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
             running_loss = 0.0
+        if timer.rcheck():
+            save_net(net,weights_file)
+            
 print('**** Finished Training')
 
 save_net(net,weights_file)
