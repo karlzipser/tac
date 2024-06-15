@@ -1,4 +1,4 @@
-batch_size=32
+batch_size=64
 num_workers=4
-num_epochs=10
-device='cpu'
+num_epochs=15
+device='cuda:0'

@@ -10,17 +10,18 @@ if 'project_' in __file__:
     import sys,os
     sys.path.insert(0,os.path.join(pname(pname(__file__)),'env'))
     weights_file=opj(pname(pname(__file__)),'net/weights',d2p(time_str(),'pth'))
-    figure_file=opj(pname(pname(__file__)),'figures',d2p(time_str(),'png'))
+    figure_file=opj(pname(pname(__file__)),'figures',d2p(time_str(),'pdf'))
     stats_file=opj(pname(pname(__file__)),'stats',d2p(time_str(),'txt'))
 ##
 ################################################################################
-from UTILS_.vis import *
+from projutils import *
 from ..params.a import *
 from .dataloader import *
 from .stats import *
 from ..net.code.net import *
 
-net=get_net(Net)
+device = torch.device(device if torch.cuda.is_available() else 'cpu')
+net=get_net(device=device,net_class=Net)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
@@ -43,10 +44,19 @@ print('**** Finished Training')
 
 save_net(net,weights_file)
 
-net=get_net(Net,weights_file=weights_file)
+net=get_net(device=device,net_class=Net,weights_file=weights_file)
+
+
+dataiter = iter(testloader)
+images, labels = next(dataiter)
+sh(torchvision.utils.make_grid(images),'grid')
+plt.savefig(figure_file)
+
 
 stats=get_accuracy(net,testloader,classes,device)
 print(stats)
 t2f(stats_file,stats)
+
+print('*** Done')
 
 #EOF
