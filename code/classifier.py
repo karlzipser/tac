@@ -43,7 +43,7 @@ for epoch in range(num_epochs):
             running_loss = 0.0
         if timer.rcheck():
             save_net(net,weights_file)
-            
+
 print('**** Finished Training')
 
 save_net(net,weights_file)
