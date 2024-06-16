@@ -25,7 +25,8 @@ net=get_net(device=device,net_class=Net)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-timer=Timer(300)
+save_timer=Timer(60)
+save_timer.trigger()
 for epoch in range(num_epochs):
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -34,14 +35,16 @@ for epoch in range(num_epochs):
         inputs=inputs.to(device)
         labels=labels.to(device)
         outputs = net(inputs)
-        loss = criterion(outputs, labels)
+        #print(6,inputs.size())
+        #print(7,outputs.size())
+        loss = criterion(torch.flatten(outputs,1), labels)
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
         if i % 2000 == 1999:
             print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
             running_loss = 0.0
-        if timer.rcheck():
+        if save_timer.rcheck():
             save_net(net,weights_file)
 
 print('**** Finished Training')

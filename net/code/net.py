@@ -26,16 +26,24 @@ class Net_original(nn.Module):
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.a = nn.Conv2d(3,8,kernel_size=3,stride=2,padding=1)
-        self.b = nn.Conv2d(8,16,kernel_size=3,stride=2,padding=1)
-        self.c = nn.Conv2d(16,32,kernel_size=3,stride=2,padding=1)
-        self.d = nn.Conv2d(32, 10,kernel_size=3,stride=2,padding=1)
+        self.a = nn.Conv2d(3,16,kernel_size=5,stride=2,padding=1)
+        self.b = nn.Conv2d(16,32,kernel_size=5,stride=2,padding=1)
+        self.c = nn.Conv2d(32,64,kernel_size=5,stride=2,padding=1)
+        self.d = nn.Conv2d(64, 128,kernel_size=5,stride=2,padding=1)
+        self.e = nn.Conv2d(128, 10,kernel_size=1,stride=1,padding=0)
 
     def forward(self, x):
+        #print(1,x.size())
         x = F.relu(self.a(x))
+        #print(2,x.size())
         x = F.relu(self.b(x))
+        #print(3,x.size())
         x = F.relu(self.c(x))
+        #print(4,x.size())
         x = self.d(x)
-
+        #print(5,x.size())
+        x = self.e(x)
+        #print(6,x.size())
+        #input('here')
         return x
 #EOF
