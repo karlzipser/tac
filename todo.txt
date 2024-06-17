@@ -1,0 +1,30 @@
+work on prints to allow output to multiple outs
+
+projutils
+add prefix path as command line arg or something like this
+
+tac_ideal/tac_attn
+put net project path into params.py
+
+tac
+use adam optimizer
+save weights as ‘latest.pth’
+
+get saving of figures and outputs working on above projects, then run and save complete project html files
+
+test out running project in stand alone manner
+
+write document explaining constraints and benefits of using projutils
+
+projutils/summarize.py
+	summarize runs for a project
+		rating
+		size
+		num files by type
+
+projutils/runmenu.py
+	list runs
+	rate runs
+	delete runs
+	put run path into clipboard
+	load run into browser
