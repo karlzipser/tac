@@ -1,4 +1,5 @@
 import torch
+from utilz2 import *
 
 def get_accuracy(net,testloader,classes,device):
     correct_pred = {classname: 0 for classname in classes}
@@ -15,9 +16,15 @@ def get_accuracy(net,testloader,classes,device):
                     correct_pred[classes[label]] += 1
                 total_pred[classes[label]] += 1
     stats=[]
+    ctr=0
+    acc_mean=0
     for classname, correct_count in correct_pred.items():
         accuracy = 100 * float(correct_count) / total_pred[classname]
+        acc_mean+=accuracy
+        ctr+=1
         stats.append(f'**** Accuracy for class: {classname:5s} is {accuracy:.1f} %')
+    acc_mean/=ctr
+    stats.append(d2n('\tMean accuracy is ',int(acc_mean),'%.'))
     stats='\n'.join(stats)
     return stats
 
