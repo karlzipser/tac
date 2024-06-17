@@ -1,52 +1,63 @@
 ## 79 ########################################################################
 
 print(__file__)
+assert 'project_' in __file__
 from utilz2 import *
-##############################################################################
-##
-weights_file=''
-figure_file=''
-stats_file=''
-if 'project_' in __file__:
-  import sys,os
-  sys.path.insert(0,os.path.join(pname(pname(__file__)),'env'))
-  weights_file=opj(pname(pname(__file__)),'net/weights',d2p(time_str(),'pth'))
-  figure_file=opj(pname(pname(__file__)),'figures',d2p(time_str(),'pdf'))
-  stats_file=opj(pname(pname(__file__)),'stats',d2p(time_str(),'txt'))
-##
-##############################################################################
+import sys,os
 from projutils import *
 from ..params.a import *
 from .dataloader import *
 from .stats import *
 from ..net.code.net import *
 
-device = torch.device(device if torch.cuda.is_available() else 'cpu')
-net=get_net(device=device,net_class=Net)
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+sys.path.insert(0,os.path.join(pname(pname(__file__)),'env'))
+weights_path=opj(pname(pname(__file__)),'net/weights')
+figures_path=opj(pname(pname(__file__)),'figures')
+stats_path=opj(pname(pname(__file__)),'stats')
 
-save_timer=Timer(60)
+mkdirp(figures_path)
+mkdirp(weights_path)
+mkdirp(stats_path)
+
+device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
+net=get_net(device=device,net_class=Net)
+criterion=nn.CrossEntropyLoss()
+optimizer=optim.Adam(net.parameters(),lr=.001,betas=(0.5,0.999))
+
+save_timer=Timer(p.save_time)
 save_timer.trigger()
-for epoch in range(num_epochs):
-  running_loss = 0.0
-  for i, data in enumerate(trainloader, 0):
-    inputs, labels = data
-    optimizer.zero_grad()
-    inputs=inputs.to(device)
-    labels=labels.to(device)
-    outputs = net(inputs)
-    loss = criterion(torch.flatten(outputs,1), labels)
-    loss.backward()
-    optimizer.step()
-    running_loss += loss.item()
-    if i % 2000 == 1999:
-      print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-      running_loss = 0.0
-    if save_timer.rcheck():
-      save_net(net,weights_file)
+loss_timer=Timer(p.loss_time)
+loss_ctr=0
+it_list=[]
+running_loss_list=[]
+
+for epoch in range(p.num_epochs):
+    running_loss = 0.0
+    for i, data in enumerate(trainloader, 0):
+        inputs, labels = data
+        optimizer.zero_grad()
+        inputs=inputs.to(device)
+        labels=labels.to(device)
+        outputs = net(inputs)
+        loss = criterion(torch.flatten(outputs,1), labels)
+        loss.backward()
+        optimizer.step()
+        running_loss += loss.item()
+        loss_ctr+=1
+        if loss_timer.rcheck():
+            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / loss_ctr:.3f}')
+            it_list.append(loss_ctr)
+            running_loss_list.append(running_loss/loss_ctr)
+            running_loss = 0.0
+            figure(1);clf();plot(it_list,running_loss_list);plt.xlabel('iterations');
+            plt.ylabel('avg loss')
+            plt.title(__file__.replace(opjh(),''))
+            plt.savefig(opj(figures_path,'loss.pdf'))
+        if save_timer.rcheck():
+            save_net(net,opj(weights_path,'latest.pth'))
 
 print('**** Finished Training')
+
 
 save_net(net,weights_file)
 
