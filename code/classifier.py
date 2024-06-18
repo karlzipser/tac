@@ -153,7 +153,7 @@ for epoch in range(p.num_epochs):
                 dp(current_loss,3),'best_loss=',dp(best_loss,3))]
             for f in fs:
                 tx.append(
-                    d2s(f,time_str(t=os.path.getmtime(f)),comma(os.path.getsize(f))))
+                    d2s(f,time_str(t=os.path.getmtime(f)),os.path.getsize(f)))
             t2f(opj(stats_path,'weights_info.txt'),'\n'.join(tx))
     if test_timer.rcheck():
         stats=get_accuracy(net,testloader,classes,device)
