@@ -39,7 +39,7 @@ class Loss_Recorder():
         self.i=[]
         self.r=[]
         self.ctr=0
-    def add(d):
+    def add(self,d):
         self.t.append(time.time())
         self.f.append(d)
         if ctr:
@@ -102,8 +102,10 @@ for epoch in range(p.num_epochs):
         loss = criterion(torch.flatten(outputs,1), labels)
         loss.backward()
         optimizer.step()
-        loss_recorder.add(loss.item)
+        loss_recorder.add(loss.item())
         loss_recorder.plot()
+        spause()
+        cm()
         if False:
             running_loss += loss.item()
             loss_ctr+=1
