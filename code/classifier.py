@@ -32,6 +32,7 @@ class Loss_Recorder():
         path,
         plottime=10,
         savetime=10,
+        skip=1000,
         s=0.01,
     ):
         super(Loss_Recorder,self).__init__()
@@ -40,20 +41,23 @@ class Loss_Recorder():
         self.t=[]
         self.i=[]
         self.r=[]
-        self.ctr=0
+        self.ctr=-1
         self.plottimer=Timer(plottime)
         self.savetimer=Timer(plottime)
     def add(self,d):
+        self.ctr+=1
+        if not ctr%self.skip:
+            return
         self.t.append(time.time())
         self.f.append(d)
-        if self.ctr:
+        if len(self.i):
             s=self.s
-            a=self.r[self.ctr-1]
+            a=self.r[self.r[-1]]
             b=(1-s)*a+s*d
             self.r.append(b)
         else:
             self.r.append(d)
-        self.ctr+=1
+        
         self.i.append(self.ctr)
         if False:#autoreduce:
             if ctr>2000:
