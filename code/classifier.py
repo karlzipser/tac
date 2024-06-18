@@ -72,7 +72,7 @@ class Loss_Recorder():
         if not self.savetimer.rcheck():
             return
         d={}
-        for k in ['i','f','t','r']:self.__dict__:
+        for k in ['i','f','t','r']:#self.__dict__:
             if 'timer' not in k:
                 d[k]=self.__dict__[k]
         so(opj(self.path,'loss'),d)
