@@ -20,7 +20,8 @@ mkdirp(figures_path)
 mkdirp(weights_path)
 mkdirp(stats_path)
 
-weights_file=opj(weights_path,'latest.pth')
+weights_latest=opj(weights_path,'latest.pth')
+weights_best=  opj(weights_path,'best.pth')
 stats_file=opj(stats_path,'stats.txt')
 
 device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
@@ -32,8 +33,8 @@ class Loss_Recorder():
         path,
         plottime=10,
         savetime=10,
-        skip=100,
-        s=0.01,
+        sampletime=1,
+        s=0.1,
     ):
         super(Loss_Recorder,self).__init__()
         packdict(self,locals())
@@ -43,35 +44,29 @@ class Loss_Recorder():
         self.r=[]
         self.ctr=-1
         self.plottimer=Timer(plottime)
-        self.savetimer=Timer(plottime)
+        self.savetimer=Timer(savetime)
+        self.sampletimer=Timer(sampletime)
+        self.acc_ctr=0
+        self.acc=0
     def add(self,d):
-        self.ctr+=1
-        if not self.ctr%self.skip:
+        self.acc+=d
+        self.acc_ctr+=1
+        if not self.sampletimer.rcheck():
             return
+        d=self.acc/self.acc_ctr
+        self.acc=0
+        self.acc_ctr=0        
+        self.ctr+=1
+        self.i.append(self.ctr)
         self.t.append(time.time())
         self.f.append(d)
-        if len(self.i):
+        if len(self.r):
             s=self.s
-            a=self.r[self.i[-1]]
+            a=self.r[-1]
             b=(1-s)*a+s*d
             self.r.append(b)
         else:
             self.r.append(d)
-        
-        self.i.append(self.ctr)
-        if False:#autoreduce:
-            if ctr>2000:
-                f=[]
-                t=[]
-                i=[]
-                r=[]
-                for q in range(0,ctr,2):
-                    i.append(q)
-                    f.append(self.f[q])
-                    t.append(self.t[q])
-                    r.append(self.r[q])
-
-
     def save(self):
         if not self.savetimer.rcheck():
             return
@@ -99,8 +94,13 @@ class Loss_Recorder():
         self.add(d)
         self.plot()
         self.save()
-loss_recorder=Loss_Recorder(stats_path)
+    def current(self):
+        return self.r[-1]
+#eoc
 
+
+loss_recorder=Loss_Recorder(stats_path)
+best_loss=1e999
 if p.run_path:
     print('****** Continuing from',p.run_path)
     net=get_net(
@@ -114,8 +114,9 @@ criterion=nn.CrossEntropyLoss()
 optimizer=optim.Adam(net.parameters(),lr=.001,betas=(0.5,0.999))
 
 save_timer=Timer(p.save_time)
-save_timer.trigger()
-loss_timer=Timer(p.loss_time)
+#save_timer.trigger()
+test_timer=Timer(p.test_time)
+#loss_timer=Timer(p.loss_time)
 loss_ctr=0
 loss_ctr_all=0
 it_list=[]
@@ -135,30 +136,31 @@ for epoch in range(p.num_epochs):
         loss.backward()
         optimizer.step()
         loss_recorder.do(loss.item())
-        
-        spause()
-        #cm()
-        if False:
-            running_loss += loss.item()
-            loss_ctr+=1
-            loss_ctr_all+=1
-            if loss_timer.rcheck():
-                print(
-                    f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / loss_ctr:.3f}')
-                it_list.append(loss_ctr_all)
-                running_loss_list.append(running_loss/loss_ctr)
-                running_loss = 0.0
-                loss_ctr=0
-                if 'graphics':
-                    figure(1)
-                    clf()
-                    plot(it_list,running_loss_list)
-                    plt.xlabel('iterations');
-                    plt.ylabel('avg loss')
-                    plt.title(__file__.replace(opjh(),''))
-                    plt.savefig(opj(figures_path,'loss.pdf'))
-        #if save_timer.rcheck():
-        #    save_net(net,weights_file)
+        if save_timer.rcheck():
+            save_net(net,weights_latest)
+            current_loss=loss_recorder.current()
+            
+            if current_loss<=best_loss:
+                best_loss=current_loss
+                save_net(net,weights_best)
+            else:
+                print('*** current_loss=',current_loss,'best_loss=',best_loss)
+            if not ope(weights_best):
+                save_net(net,weights_best)
+            
+            fs=sggo(weights_path,'*.pth')
+            tx=[d2s('epoch',epoch,'current_loss=',
+                dp(current_loss,3),'best_loss=',dp(best_loss,3))]
+            for f in fs:
+                tx.append(
+                    d2s(f,time_str(t=os.path.getmtime(f)),comma(os.path.getsize(f))))
+            t2f(opj(stats_path,'weights_info.txt'),'\n'.join(tx))
+    if test_timer.rcheck():
+        stats=get_accuracy(net,testloader,classes,device)
+        print(time_str('Pretty2'),'epoch=',epoch)
+        print(stats)
+        t2f(stats_file,stats)
+
 
 print('*** Finished Training')
 
