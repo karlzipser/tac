@@ -30,6 +30,7 @@ class Loss_Recorder():
     def __init__(
         self,
         path,
+        plottime=10,
         s=0.001,
     ):
         super(Loss_Recorder,self).__init__()
@@ -39,6 +40,7 @@ class Loss_Recorder():
         self.i=[]
         self.r=[]
         self.ctr=0
+        self.timer=Timer(plottime)
     def add(self,d):
         self.t.append(time.time())
         self.f.append(d)
@@ -58,6 +60,8 @@ class Loss_Recorder():
         for k in d:
             self.__dict__[k]=d[k]
     def plot(self):
+        if not self.timer.rcheck():
+            return
         figure('loss')
         clf()
         plot(self.i,self.f,'c')
