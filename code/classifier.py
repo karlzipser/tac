@@ -10,10 +10,11 @@ from .dataloader import *
 from .stats import *
 from ..net.code.net import *
 
-sys.path.insert(0,os.path.join(pname(pname(__file__)),'env'))
-weights_path=opj(pname(pname(__file__)),'net/weights')
-figures_path=opj(pname(pname(__file__)),'figures')
-stats_path=opj(pname(pname(__file__)),'stats')
+thispath=pname(pname(__file__)
+sys.path.insert(0,os.path.join(thispath),'env'))
+weights_path=opj(thispath),'net/weights')
+figures_path=opj(thispath),'figures')
+stats_path=opj(thispath),'stats')
 
 mkdirp(figures_path)
 mkdirp(weights_path)
@@ -23,6 +24,50 @@ weights_file=opj(weights_path,'latest.pth')
 stats_file=opj(stats_path,'stats.txt')
 
 device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
+
+
+class Loss_Recorder():
+    def __init__(
+        self,
+        path,
+        s=0.001,
+    ):
+        super(Loss_Recorder,self).__init__()
+        packdict(self,locals())
+        self.f=[]
+        self.t=[]
+        self.i=[]
+        self.r=[]
+        self.ctr=0
+    def add(d):
+        self.t.append(time.time())
+        self.f.append(d)
+        if ctr:
+            s=self.s
+            a=self.r[ctr-1]
+            b=(1-s)*a+s*d
+            self.r.append(b)
+        else:
+            self.r.append(d)
+        self.ctr+=1
+        self.i.append(ctr)
+    def save():
+        so(opj(self.path,'loss'),self.__dict__)
+    def load():
+        d=lo(opj(self.path,'loss'))
+        for k in d:
+            self.__dict__[k]=d[k]
+    def plot():
+        figure('loss')
+        clf()
+        plot(self.i,self.f,'c')
+        plot(self.i,self.r,'b')
+        plt.xlabel('iterations');
+        plt.ylabel('loss')
+        plt.title(self.path.replace(opjh(),''))
+        plt.savefig(opj(self.path,'loss.pdf'))
+
+loss_recorder=Loss_Recorder(thispath)
 
 if p.run_path:
     print('****** Continuing from',p.run_path)
@@ -57,24 +102,27 @@ for epoch in range(p.num_epochs):
         loss = criterion(torch.flatten(outputs,1), labels)
         loss.backward()
         optimizer.step()
-        running_loss += loss.item()
-        loss_ctr+=1
-        loss_ctr_all+=1
-        if loss_timer.rcheck():
-            print(
-                f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / loss_ctr:.3f}')
-            it_list.append(loss_ctr_all)
-            running_loss_list.append(running_loss/loss_ctr)
-            running_loss = 0.0
-            loss_ctr=0
-            if 'graphics':
-                figure(1)
-                clf()
-                plot(it_list,running_loss_list)
-                plt.xlabel('iterations');
-                plt.ylabel('avg loss')
-                plt.title(__file__.replace(opjh(),''))
-                plt.savefig(opj(figures_path,'loss.pdf'))
+        loss_recorder.add(loss.item)
+        loss_recorder.plot()
+        if False:
+            running_loss += loss.item()
+            loss_ctr+=1
+            loss_ctr_all+=1
+            if loss_timer.rcheck():
+                print(
+                    f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / loss_ctr:.3f}')
+                it_list.append(loss_ctr_all)
+                running_loss_list.append(running_loss/loss_ctr)
+                running_loss = 0.0
+                loss_ctr=0
+                if 'graphics':
+                    figure(1)
+                    clf()
+                    plot(it_list,running_loss_list)
+                    plt.xlabel('iterations');
+                    plt.ylabel('avg loss')
+                    plt.title(__file__.replace(opjh(),''))
+                    plt.savefig(opj(figures_path,'loss.pdf'))
         if save_timer.rcheck():
             save_net(net,weights_file)
 
