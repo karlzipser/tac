@@ -44,7 +44,7 @@ class Loss_Recorder():
         self.f.append(d)
         if self.ctr:
             s=self.s
-            a=self.r[ctr-1]
+            a=self.r[self.ctr-1]
             b=(1-s)*a+s*d
             self.r.append(b)
         else:
