@@ -105,7 +105,7 @@ for epoch in range(p.num_epochs):
         loss_recorder.add(loss.item())
         loss_recorder.plot()
         spause()
-        cm()
+        #cm()
         if False:
             running_loss += loss.item()
             loss_ctr+=1
@@ -125,8 +125,8 @@ for epoch in range(p.num_epochs):
                     plt.ylabel('avg loss')
                     plt.title(__file__.replace(opjh(),''))
                     plt.savefig(opj(figures_path,'loss.pdf'))
-        if save_timer.rcheck():
-            save_net(net,weights_file)
+        #if save_timer.rcheck():
+        #    save_net(net,weights_file)
 
 print('*** Finished Training')
 
