@@ -32,7 +32,7 @@ class Loss_Recorder():
         path,
         plottime=10,
         savetime=10,
-        skip=1000,
+        skip=100,
         s=0.01,
     ):
         super(Loss_Recorder,self).__init__()
