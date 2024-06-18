@@ -74,7 +74,7 @@ class Loss_Recorder():
         d={}
         for k in self.__dict__:
             if 'timer' not in k:
-                d[k]=__dict__[k]
+                d[k]=self.__dict__[k]
         so(opj(self.path,'loss'),d)
     def load(self):
         d=lo(opj(self.path,'loss'))
