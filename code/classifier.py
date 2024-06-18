@@ -51,13 +51,13 @@ class Loss_Recorder():
             self.r.append(d)
         self.ctr+=1
         self.i.append(self.ctr)
-    def save():
+    def save(self):
         so(opj(self.path,'loss'),self.__dict__)
-    def load():
+    def load(self):
         d=lo(opj(self.path,'loss'))
         for k in d:
             self.__dict__[k]=d[k]
-    def plot():
+    def plot(self):
         figure('loss')
         clf()
         plot(self.i,self.f,'c')
