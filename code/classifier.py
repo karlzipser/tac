@@ -46,7 +46,7 @@ class Loss_Recorder():
         self.savetimer=Timer(plottime)
     def add(self,d):
         self.ctr+=1
-        if not ctr%self.skip:
+        if not self.ctr%self.skip:
             return
         self.t.append(time.time())
         self.f.append(d)
