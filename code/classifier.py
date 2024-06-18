@@ -30,8 +30,8 @@ class Loss_Recorder():
     def __init__(
         self,
         path,
-        plottime=30,
-        savetime=60,
+        plottime=10,
+        savetime=10,
         s=0.01,
     ):
         super(Loss_Recorder,self).__init__()
