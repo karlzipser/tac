@@ -10,11 +10,11 @@ from .dataloader import *
 from .stats import *
 from ..net.code.net import *
 
-thispath=pname(pname(__file__)
-sys.path.insert(0,os.path.join(thispath),'env'))
-weights_path=opj(thispath),'net/weights')
-figures_path=opj(thispath),'figures')
-stats_path=opj(thispath),'stats')
+thispath=pname(pname(__file__))
+sys.path.insert(0,opj(thispath,'env'))
+weights_path=opj(thispath,'net/weights')
+figures_path=opj(thispath,'figures')
+stats_path=opj(thispath,'stats')
 
 mkdirp(figures_path)
 mkdirp(weights_path)
