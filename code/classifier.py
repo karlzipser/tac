@@ -42,7 +42,7 @@ class Loss_Recorder():
     def add(self,d):
         self.t.append(time.time())
         self.f.append(d)
-        if ctr:
+        if self.ctr:
             s=self.s
             a=self.r[ctr-1]
             b=(1-s)*a+s*d
@@ -50,7 +50,7 @@ class Loss_Recorder():
         else:
             self.r.append(d)
         self.ctr+=1
-        self.i.append(ctr)
+        self.i.append(self.ctr)
     def save():
         so(opj(self.path,'loss'),self.__dict__)
     def load():
