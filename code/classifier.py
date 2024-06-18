@@ -30,8 +30,9 @@ class Loss_Recorder():
     def __init__(
         self,
         path,
-        plottime=10,
-        s=0.001,
+        plottime=30,
+        savetime=60,
+        s=0.01,
     ):
         super(Loss_Recorder,self).__init__()
         packdict(self,locals())
@@ -40,7 +41,8 @@ class Loss_Recorder():
         self.i=[]
         self.r=[]
         self.ctr=0
-        self.timer=Timer(plottime)
+        self.plottimer=Timer(plottime)
+        self.savetimer=Timer(plottime)
     def add(self,d):
         self.t.append(time.time())
         self.f.append(d)
@@ -53,14 +55,29 @@ class Loss_Recorder():
             self.r.append(d)
         self.ctr+=1
         self.i.append(self.ctr)
+        if False:#autoreduce:
+            if ctr>2000:
+                f=[]
+                t=[]
+                i=[]
+                r=[]
+                for q in range(0,ctr,2):
+                    i.append(q)
+                    f.append(self.f[q])
+                    t.append(self.t[q])
+                    r.append(self.r[q])
+
+
     def save(self):
+        if not self.savetimer.rcheck():
+            return
         so(opj(self.path,'loss'),self.__dict__)
     def load(self):
         d=lo(opj(self.path,'loss'))
         for k in d:
             self.__dict__[k]=d[k]
     def plot(self):
-        if not self.timer.rcheck():
+        if not self.plottimer.rcheck():
             return
         figure('loss')
         clf()
@@ -70,8 +87,11 @@ class Loss_Recorder():
         plt.ylabel('loss')
         plt.title(self.path.replace(opjh(),''))
         plt.savefig(opj(self.path,'loss.pdf'))
-
-loss_recorder=Loss_Recorder(thispath)
+    def do(self,d):
+        self.add(d)
+        self.plot()
+        self.save()
+loss_recorder=Loss_Recorder(stats_path)
 
 if p.run_path:
     print('****** Continuing from',p.run_path)
@@ -106,8 +126,8 @@ for epoch in range(p.num_epochs):
         loss = criterion(torch.flatten(outputs,1), labels)
         loss.backward()
         optimizer.step()
-        loss_recorder.add(loss.item())
-        loss_recorder.plot()
+        loss_recorder.do(loss.item())
+        
         spause()
         #cm()
         if False:
