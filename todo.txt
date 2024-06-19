@@ -1,35 +1,30 @@
-get loss working for test data
 
-generalize gathering of statistics over time (e.g., F1-scores)
+To do now:
+	get loss working for test data
+	generalize gathering of statistics over time (e.g., F1-scores)
 
-work on prints to allow output to multiple outs
+Longer term:
+	projutils/summarize.py
+		summarize runs for a project
+			rating
+			size
+			num files by type
+			nepochs
 
-tac_ideal/tac_attn
-
-get saving of figures and outputs working on above projects, then run and save complete project html files
-
-write document explaining constraints and benefits of using projutils
-
-projutils/summarize.py
-	summarize runs for a project
-		rating
-		size
-		num files by type
-		nepochs
-
-projutils/runmenu.py
-	list runs
-	rate runs
-	delete runs
-	put run path into clipboard
-	load run into browser
-
-
+	projutils/runmenu.py
+		list runs
+		rate runs
+		delete runs
+		put run path into clipboard
+		load run into browser
 
 Done:
-tac
 	*use adam optimizer
 	*save weights as ‘latest.pth’
 	*save current epoch somehow
 	*put net project path into params.py
 	?test out running project in stand alone manner
+	*work on prints to allow output to multiple outs
+	*get saving of figures and outputs working on above projects, then run and save complete project html files
+	?write document explaining constraints and benefits of using projutils
+
