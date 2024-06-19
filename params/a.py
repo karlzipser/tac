@@ -8,7 +8,10 @@ p=k2c(
 	save_time=60,
 	loss_time=10,
 	test_time=60,
-	run_path='',#'project_tac/17Jun24_22h35m42s-net_net', #'project_tac/17Jun24_21h48m18s-net_net',
+	lr=0.0001,
+	percent_loss_to_show=25,
+	loss_s=.01,
+	run_path='project_tac/18Jun24_13h59m32s',
 )
 
 #EOF
