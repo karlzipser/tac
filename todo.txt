@@ -1,3 +1,4 @@
+
 get loss working for test data
 
 generalize gathering of statistics over time (e.g., F1-scores)
