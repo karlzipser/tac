@@ -1,16 +1,12 @@
+get loss working for test data
+
+generalize gathering of statistics over time (e.g., F1-scores)
+
 work on prints to allow output to multiple outs
 
 tac_ideal/tac_attn
-put net project path into params.py
-
-tac
-
-save current epoch somehow
 
 get saving of figures and outputs working on above projects, then run and save complete project html files
-
-
-test out running project in stand alone manner
 
 write document explaining constraints and benefits of using projutils
 
@@ -34,5 +30,6 @@ Done:
 tac
 	*use adam optimizer
 	*save weights as ‘latest.pth’
-
-
+	*save current epoch somehow
+	*put net project path into params.py
+	?test out running project in stand alone manner
