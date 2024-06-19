@@ -1,3 +1,4 @@
+# git push --all -u
 
 get loss working for test data
 
