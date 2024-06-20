@@ -7,7 +7,7 @@ import sys,os
 from projutils import *
 from ..params.a import *
 from .dataloader import *
-from .stats import *
+#from .stats import *
 from ..net.code.net import *
 
 thispath=pname(pname(__file__))
