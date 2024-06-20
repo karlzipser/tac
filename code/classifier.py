@@ -5,7 +5,7 @@ assert 'project_' in __file__
 from utilz2 import *
 import sys,os
 from projutils import *
-from ..params.a import *
+#from ..params.a_local import *
 from .dataloader import *
 #from .stats import *
 from ..net.code.net import *
@@ -25,8 +25,9 @@ weights_best=  opj(weights_path,'best.pth')
 stats_file=opj(stats_path,'stats.txt')
 
 device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
-
+kprint(p.__dict__)
 best_loss=1e999
+cE(p.run_path,r=True)
 if p.run_path:
     print('****** Continuing from',p.run_path)
     net=get_net(
@@ -36,18 +37,28 @@ if p.run_path:
     loss_recorder_train=Loss_Recorder(
         opjh(p.run_path,fname(thispath),'stats'),
         pct_to_show=p.percent_loss_to_show,
-        s=p.loss_s,)
+        s=p.loss_s,
+        name='train loss',)
     loss_recorder_train.load()
     loss_recorder_train.path=stats_path
+    loss_recorder_test=Loss_Recorder(
+        opjh(p.run_path,fname(thispath),'stats'),
+        pct_to_show=p.percent_loss_to_show,
+        s=p.loss_s,
+        name='test loss',)
+    loss_recorder_test.load()
+    loss_recorder_test.path=stats_path
 else:
     net=get_net(device=device,net_class=Net)
     loss_recorder_train=Loss_Recorder(
-        stats_path,pct_to_show=p.percent_loss_to_show,
+        stats_path,
+        pct_to_show=p.percent_loss_to_show,
         s=p.loss_s,
         name='train loss',
         )
     loss_recorder_test=Loss_Recorder(
-        stats_path,pct_to_show=p.percent_loss_to_show,
+        stats_path,
+        pct_to_show=p.percent_loss_to_show,
         s=p.loss_s*p.test_sample_factor,
         name='test loss',
         )

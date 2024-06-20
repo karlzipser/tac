@@ -3,7 +3,7 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
-from ..params.a import *
+from ..params.a_local import *
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
