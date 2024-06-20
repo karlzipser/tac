@@ -48,7 +48,7 @@ else:
         )
     loss_recorder_test=Loss_Recorder(
         stats_path,pct_to_show=p.percent_loss_to_show,
-        s=p.loss_s,
+        s=p.loss_s*p.test_sample_factor,
         name='test loss',
         )
 
@@ -83,15 +83,19 @@ for epoch in range(p.num_epochs):
         loss.backward()
         optimizer.step()
         loss_recorder_train.do(loss.item())
-        if not i%6:
+        if not i%p.test_sample_factor:
             printr(i,'test')
             net.eval()
             test_inputs,test_labels = next(dataiter)
             test_outputs=net(test_inputs)
             test_loss=criterion(torch.flatten(test_outputs,1),test_labels)
+            if len(loss_recorder_train.i):
+                ec=external_ctr=loss_recorder_train.i[-1]
+            else:
+                ec=0
             loss_recorder_test.do(
                 test_loss.item(),
-                external_ctr=loss_recorder_train.i[-1],)
+                external_ctr=ec)
             net.train()
         if save_timer.rcheck():
             save_net(net,weights_latest)
@@ -112,6 +116,11 @@ for epoch in range(p.num_epochs):
                 tx.append(
                     d2s(f,time_str(t=os.path.getmtime(f)),os.path.getsize(f)))
             t2f(opj(stats_path,'weights_info.txt'),'\n'.join(tx))
+        if loss_recorder_train.plottimer.rcheck():
+            loss_recorder_train.plot()
+            loss_recorder_test.plot(
+                clear=False,rawcolor='g',smoothcolor='r',savefig=True)
+            spause()
     if test_timer.rcheck():
         stats=get_accuracy(net,testloader,classes,device)
         print(time_str('Pretty2'),'epoch=',epoch)
