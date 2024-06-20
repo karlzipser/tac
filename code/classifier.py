@@ -27,7 +27,7 @@ stats_file=opj(stats_path,'stats.txt')
 device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
 kprint(p.__dict__)
 best_loss=1e999
-cE(p.run_path,r=True)
+
 if p.run_path:
     print('****** Continuing from',p.run_path)
     net=get_net(
