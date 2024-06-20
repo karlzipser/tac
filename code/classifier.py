@@ -33,23 +33,30 @@ if p.run_path:
         device=device,
         run_path=p.run_path,
     )
-    loss_recorder=Loss_Recorder(
+    loss_recorder_train=Loss_Recorder(
         opjh(p.run_path,fname(thispath),'stats'),
         pct_to_show=p.percent_loss_to_show,
         s=p.loss_s,)
-    loss_recorder.load()
-    loss_recorder.path=stats_path
+    loss_recorder_train.load()
+    loss_recorder_train.path=stats_path
 else:
     net=get_net(device=device,net_class=Net)
-    loss_recorder=Loss_Recorder(stats_path,pct_to_show=p.percent_loss_to_show,s=p.loss_s)
+    loss_recorder_train=Loss_Recorder(
+        stats_path,pct_to_show=p.percent_loss_to_show,
+        s=p.loss_s,
+        name='train loss',
+        )
+    loss_recorder_test=Loss_Recorder(
+        stats_path,pct_to_show=p.percent_loss_to_show,
+        s=p.loss_s,
+        name='test loss',
+        )
 
 criterion=nn.CrossEntropyLoss()
 optimizer=optim.Adam(net.parameters(),lr=p.lr)
 
 save_timer=Timer(p.save_time)
-#save_timer.trigger()
 test_timer=Timer(p.test_time)
-#loss_timer=Timer(p.loss_time)
 loss_ctr=0
 loss_ctr_all=0
 it_list=[]
@@ -64,7 +71,9 @@ for epoch in range(p.num_epochs):
         title=thispath,
         space_increment='....',)
     running_loss = 0.0
+    dataiter = iter(testloader)
     for i, data in enumerate(trainloader, 0):
+        printr(i,'train')
         inputs, labels = data
         optimizer.zero_grad()
         inputs=inputs.to(device)
@@ -73,10 +82,20 @@ for epoch in range(p.num_epochs):
         loss = criterion(torch.flatten(outputs,1), labels)
         loss.backward()
         optimizer.step()
-        loss_recorder.do(loss.item())
+        loss_recorder_train.do(loss.item())
+        if not i%6:
+            printr(i,'test')
+            net.eval()
+            test_inputs,test_labels = next(dataiter)
+            test_outputs=net(test_inputs)
+            test_loss=criterion(torch.flatten(test_outputs,1),test_labels)
+            loss_recorder_test.do(
+                test_loss.item(),
+                external_ctr=loss_recorder_train.i[-1],)
+            net.train()
         if save_timer.rcheck():
             save_net(net,weights_latest)
-            current_loss=loss_recorder.current()
+            current_loss=loss_recorder_train.current()
             
             if current_loss<=best_loss:
                 best_loss=current_loss

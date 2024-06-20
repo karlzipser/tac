@@ -17,7 +17,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=p.batch_size,
 testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                     download=True, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=p.batch_size,
-                                    shuffle=False, num_workers=p.num_workers)
+                                    shuffle=True, num_workers=p.num_workers)
 
 classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
