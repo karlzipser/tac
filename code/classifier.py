@@ -28,40 +28,33 @@ device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
 kprint(p.__dict__)
 best_loss=1e999
 
+stats_recorders={}
 if p.run_path:
     print('****** Continuing from',p.run_path)
     net=get_net(
         device=device,
         run_path=p.run_path,
     )
-    loss_recorder_train=Loss_Recorder(
-        opjh(p.run_path,fname(thispath),'stats'),
-        pct_to_show=p.percent_loss_to_show,
-        s=p.loss_s,
-        name='train loss',)
-    loss_recorder_train.load()
-    loss_recorder_train.path=stats_path
-    loss_recorder_test=Loss_Recorder(
-        opjh(p.run_path,fname(thispath),'stats'),
-        pct_to_show=p.percent_loss_to_show,
-        s=p.loss_s,
-        name='test loss',)
-    loss_recorder_test.load()
-    loss_recorder_test.path=stats_path
+    for k in ['train loss','test loss']:
+        stats_recorders[k]=Loss_Recorder(
+            opjh(p.run_path,fname(thispath),'stats'),
+            pct_to_show=p.percent_loss_to_show,
+            s=p.loss_s,
+            name=k,)
+        stats_recorders[k].load()
+        stats_recorders[k].path=stats_path
 else:
     net=get_net(device=device,net_class=Net)
-    loss_recorder_train=Loss_Recorder(
-        stats_path,
-        pct_to_show=p.percent_loss_to_show,
-        s=p.loss_s,
-        name='train loss',
-        )
-    loss_recorder_test=Loss_Recorder(
-        stats_path,
-        pct_to_show=p.percent_loss_to_show,
-        s=p.loss_s*p.test_sample_factor,
-        name='test loss',
-        )
+    for k in ['train loss','test loss']:
+        s=p.loss_s
+        if 'test' in k:
+            s*=p.test_sample_factor
+        stats_recorders[k]=Loss_Recorder(
+            stats_path,
+            pct_to_show=p.percent_loss_to_show,
+            s=s,
+            name=k,
+            )
 
 criterion=nn.CrossEntropyLoss()
 optimizer=optim.Adam(net.parameters(),lr=p.lr)
@@ -93,24 +86,24 @@ for epoch in range(p.num_epochs):
         loss = criterion(torch.flatten(outputs,1), labels)
         loss.backward()
         optimizer.step()
-        loss_recorder_train.do(loss.item())
+        stats_recorders['train loss'].do(loss.item())
         if not i%p.test_sample_factor:
             printr(i,'test')
             net.eval()
             test_inputs,test_labels = next(dataiter)
             test_outputs=net(test_inputs)
             test_loss=criterion(torch.flatten(test_outputs,1),test_labels)
-            if len(loss_recorder_train.i):
-                ec=external_ctr=loss_recorder_train.i[-1]
+            if len(stats_recorders['train loss'].i):
+                ec=external_ctr=stats_recorders['train loss'].i[-1]
             else:
                 ec=0
-            loss_recorder_test.do(
+            stats_recorders['test loss'].do(
                 test_loss.item(),
                 external_ctr=ec)
             net.train()
         if save_timer.rcheck():
             save_net(net,weights_latest)
-            current_loss=loss_recorder_train.current()
+            current_loss=stats_recorders['test loss'].current()
             
             if current_loss<=best_loss:
                 best_loss=current_loss
@@ -127,10 +120,10 @@ for epoch in range(p.num_epochs):
                 tx.append(
                     d2s(f,time_str(t=os.path.getmtime(f)),os.path.getsize(f)))
             t2f(opj(stats_path,'weights_info.txt'),'\n'.join(tx))
-        if loss_recorder_train.plottimer.rcheck():
-            loss_recorder_train.plot()
-            loss_recorder_test.plot(
-                clear=False,rawcolor='g',smoothcolor='r',savefig=True)
+        if stats_recorders['train loss'].plottimer.rcheck():
+            stats_recorders['train loss'].plot()
+            stats_recorders['test loss'].plot(
+                clear=False,rawcolor='y',smoothcolor='r',savefig=True)
             spause()
     if test_timer.rcheck():
         stats=get_accuracy(net,testloader,classes,device)
