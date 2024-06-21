@@ -89,7 +89,7 @@ for epoch in range(p.num_epochs):
         title=thispath,
         space_increment='....',)
     running_loss = 0.0
-    dataiter = iter(trainloader)#testloader)
+    dataiter = iter(testloader2)
     for i, data in enumerate(trainloader, 0):
         #if i>100:
         #    break
