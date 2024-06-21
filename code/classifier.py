@@ -91,9 +91,9 @@ for epoch in range(p.num_epochs):
     running_loss = 0.0
     dataiter = iter(testloader)
     for i, data in enumerate(trainloader, 0):
-        if i>100:
-            break
-        printr(i,'train')
+        #if i>100:
+        #    break
+        #printr(i,'train')
         inputs, labels = data
         optimizer.zero_grad()
         inputs=inputs.to(device)
