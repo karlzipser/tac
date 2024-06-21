@@ -66,11 +66,11 @@ stats_recorders['test accuracy']=Loss_Recorder(
         sampletime=0,
         nsamples=1,
     pct_to_show=p.percent_loss_to_show,
-    s=s,
+    s=0.5,
     name=k,
     )
 
-criterion=nn.CrossEntropyLoss()
+criterion=nn.MSELoss()#CrossEntropyLoss()
 optimizer=optim.Adam(net.parameters(),lr=p.lr)
 
 save_timer=Timer(p.save_time)
@@ -81,6 +81,23 @@ it_list=[]
 running_loss_list=[]
 
 print('*** Start Training . . .')
+
+def show_sample_outputs(outputs,labels):
+    outputs=outputs.detach().cpu().numpy()
+    labels=labels.detach().cpu().numpy()
+    print(outputs)
+    print(labels)
+    print(shape(outputs))
+    print(shape(labels))
+    for i in range(16):
+        o=outputs[i,:,0,0]
+        l=0*o
+        l[labels[i]]=1
+        clf()
+        plot(o/o.max(),'r')
+        plot(o,'k')
+        plot(l,'b')
+        cm()
 
 for epoch in range(p.num_epochs):
     kprint(
@@ -97,9 +114,13 @@ for epoch in range(p.num_epochs):
         inputs, labels = data
         optimizer.zero_grad()
         inputs=inputs.to(device)
-        labels=labels.to(device)
+        #labels=labels.to(device)
         outputs = net(inputs)
-        loss = criterion(torch.flatten(outputs,1), labels)
+        targets=0*outputs.detach()
+        for ii in range(targets.size()[0]):
+            targets[ii,labels[ii],0,0]=1
+        #show_sample_outputs(outputs,labels)
+        loss = criterion(torch.flatten(outputs,1),torch.flatten(targets,1))# labels)
         loss.backward()
         optimizer.step()
         stats_recorders['train loss'].do(loss.item())
@@ -110,7 +131,11 @@ for epoch in range(p.num_epochs):
             test_inputs=test_inputs.to(device)
             test_labels=test_labels.to(device)
             test_outputs=net(test_inputs)
-            test_loss=criterion(torch.flatten(test_outputs,1),test_labels)
+            #show_sample_outputs(test_outputs,test_labels)
+            targets=0*test_outputs.detach()
+            for ii in range(targets.size()[0]):
+                targets[ii,test_labels[ii],0,0]=1
+            test_loss=criterion(torch.flatten(test_outputs,1),torch.flatten(targets,1))
             if len(stats_recorders['train loss'].i):
                 ec=external_ctr=stats_recorders['train loss'].i[-1]
             else:
