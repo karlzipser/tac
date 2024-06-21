@@ -91,6 +91,8 @@ for epoch in range(p.num_epochs):
             printr(i,'test')
             net.eval()
             test_inputs,test_labels = next(dataiter)
+            test_inputs=test_inputs.to(device)
+            test_labels=test_labels.to(device)
             test_outputs=net(test_inputs)
             test_loss=criterion(torch.flatten(test_outputs,1),test_labels)
             if len(stats_recorders['train loss'].i):
