@@ -29,13 +29,14 @@ kprint(p.__dict__)
 best_loss=1e999
 
 stats_recorders={}
+stats_keys=['train loss','test loss',]
 if p.run_path:
     print('****** Continuing from',p.run_path)
     net=get_net(
         device=device,
         run_path=p.run_path,
     )
-    for k in ['train loss','test loss']:
+    for k in stats_keys:
         stats_recorders[k]=Loss_Recorder(
             opjh(p.run_path,fname(thispath),'stats'),
             pct_to_show=p.percent_loss_to_show,
@@ -45,9 +46,9 @@ if p.run_path:
         stats_recorders[k].path=stats_path
 else:
     net=get_net(device=device,net_class=Net)
-    for k in ['train loss','test loss']:
+    for k in stats_keys:
         s=p.loss_s
-        if 'test' in k:
+        if 'test loss' in k:
             s*=p.test_sample_factor
         stats_recorders[k]=Loss_Recorder(
             stats_path,
@@ -55,6 +56,19 @@ else:
             s=s,
             name=k,
             )
+
+
+
+stats_recorders['test accuracy']=Loss_Recorder(
+    stats_path,
+        plottime=0,
+        savetime=0,
+        sampletime=0,
+        nsamples=1,
+    pct_to_show=p.percent_loss_to_show,
+    s=s,
+    name=k,
+    )
 
 criterion=nn.CrossEntropyLoss()
 optimizer=optim.Adam(net.parameters(),lr=p.lr)
@@ -77,6 +91,8 @@ for epoch in range(p.num_epochs):
     running_loss = 0.0
     dataiter = iter(testloader)
     for i, data in enumerate(trainloader, 0):
+        if i>100:
+            break
         printr(i,'train')
         inputs, labels = data
         optimizer.zero_grad()
@@ -128,12 +144,18 @@ for epoch in range(p.num_epochs):
                 clear=False,rawcolor='y',smoothcolor='r',savefig=True)
             spause()
 
-    stats=get_accuracy(net,testloader,classes,device)
+    stats,acc_mean=get_accuracy(net,testloader,classes,device)
     print(time_str('Pretty2'),'epoch=',epoch)
     print(stats)
     t2f(opj(stats_path,time_str()+'.txt'),
         d2s(time_str('Pretty2'),'epoch=',epoch,'\n\n')+stats)
-
+    ec=external_ctr=stats_recorders['train loss'].i[-1]
+    stats_recorders['test accuracy'].do(
+        acc_mean,
+        external_ctr=ec,)
+    kprint(stats_recorders['test accuracy'].__dict__)
+    stats_recorders['test accuracy'].plot(fig='test accuracy',savefig=False)
+    spause()
 print('*** Finished Training')
 
 save_net(net,weights_file)
