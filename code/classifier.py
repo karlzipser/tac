@@ -89,7 +89,7 @@ for epoch in range(p.num_epochs):
         title=thispath,
         space_increment='....',)
     running_loss = 0.0
-    dataiter = iter(testloader)
+    dataiter = iter(trainloader)#testloader)
     for i, data in enumerate(trainloader, 0):
         #if i>100:
         #    break
@@ -104,7 +104,7 @@ for epoch in range(p.num_epochs):
         optimizer.step()
         stats_recorders['train loss'].do(loss.item())
         if not i%p.test_sample_factor:
-            printr(i,'test')
+            #printr(i,'test')
             net.eval()
             test_inputs,test_labels = next(dataiter)
             test_inputs=test_inputs.to(device)
