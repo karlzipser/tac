@@ -22,7 +22,7 @@ mkdirp(stats_path)
 
 weights_latest=opj(weights_path,'latest.pth')
 weights_best=  opj(weights_path,'best.pth')
-stats_file=opj(stats_path,'stats.txt')
+#stats_file=opj(stats_path,'stats.txt')
 
 device = torch.device(p.device if torch.cuda.is_available() else 'cpu')
 kprint(p.__dict__)
@@ -125,24 +125,18 @@ for epoch in range(p.num_epochs):
             stats_recorders['test loss'].plot(
                 clear=False,rawcolor='y',smoothcolor='r',savefig=True)
             spause()
-    if test_timer.rcheck():
-        stats=get_accuracy(net,testloader,classes,device)
-        print(time_str('Pretty2'),'epoch=',epoch)
-        print(stats)
-        t2f(stats_file,stats)
+
+    stats=get_accuracy(net,testloader,classes,device)
+    print(time_str('Pretty2'),'epoch=',epoch)
+    print(stats)
+    t2f(opj(stats_path,time_str()+'.txt'),
+        d2s(time_str('Pretty2'),'epoch=',epoch,'\n\n')+stats)
 
 print('*** Finished Training')
 
 save_net(net,weights_file)
 
 net=get_net(device=device,net_class=Net,weights_file=weights_file)
-
-"""
-dataiter = iter(testloader)
-images, labels = next(dataiter)
-sh(torchvision.utils.make_grid(images),'grid')
-plt.savefig(figure_file)
-"""
 
 stats=get_accuracy(net,testloader,classes,device)
 print(stats)
