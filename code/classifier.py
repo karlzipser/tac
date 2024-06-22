@@ -79,6 +79,7 @@ else:
 save_timer=Timer(p.save_time)
 test_timer=Timer(p.test_time)
 max_timer=Timer(p.max_time)
+show_timer=Timer(p.show_time);show_timer.trigger()
 loss_ctr=0
 loss_ctr_all=0
 it_list=[]
@@ -114,13 +115,11 @@ for epoch in range(p.num_epochs):
     running_loss = 0.0
     dataiter = iter(testloader2)
     for i, data in enumerate(trainloader, 0):
-        #if i>100:
-        #    break
-        #printr(i,'train')
         inputs, labels = data
         optimizer.zero_grad()
         inputs=inputs.to(device)
-        #labels=labels.to(device)
+        #if show_timer.rcheck():
+        #    sh(torchvision.utils.make_grid(inputs),'train')
         outputs = net(inputs)
         targets=0*outputs.detach()
         for ii in range(targets.size()[0]):
@@ -135,6 +134,8 @@ for epoch in range(p.num_epochs):
             net.eval()
             test_inputs,test_labels = next(dataiter)
             test_inputs=test_inputs.to(device)
+            if show_timer.rcheck():
+                sh(torchvision.utils.make_grid(test_inputs),'test')
             test_labels=test_labels.to(device)
             test_outputs=net(test_inputs)
             #show_sample_outputs(test_outputs,test_labels)
