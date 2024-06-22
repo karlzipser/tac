@@ -3,7 +3,7 @@ assert False
 from utilz2 import *
 p=k2c(
 	batch_size=16,
-	num_workers=4,
+	num_workers=8,
 	num_epochs=100000,
 	device='cuda:0',
 	save_time=60,
@@ -18,7 +18,7 @@ p=k2c(
 	#opt=optim.SGD,lr=0.001,momentum=0.9,
 	opt=optim.Adam,lr=0.0001,momentum=None,
 	max_time=1*hours,
-	show_time=30,
+	show_time=5,
 	noise_level=.25,
 	noise_p=.5
 )
