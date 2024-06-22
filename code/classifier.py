@@ -70,9 +70,11 @@ stats_recorders['test accuracy']=Loss_Recorder(
     name=k,
     )
 
-criterion=nn.MSELoss()#CrossEntropyLoss()
-#optimizer=optim.Adam(net.parameters(),lr=p.lr)
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+criterion=p.criterion
+if p.opt==optim.Adam:
+    optimizer = p.opt(net.parameters(),lr=p.lr)
+else:
+    optimizer = p.opt(net.parameters(),lr=p.lr,momentum=p.momentum)
 
 save_timer=Timer(p.save_time)
 test_timer=Timer(p.test_time)
