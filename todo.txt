@@ -1,8 +1,12 @@
 
 To do now:
-	get loss working for test data
-	generalize gathering of statistics over time (e.g., F1-scores)
-
+	-save samples of train and test images
+	-develop code to summarize, view, comment on and delete runs
+	-put kllm into tac-style project
+	-get rf model into tac-style project
+	-generalize gathering of statistics over time (e.g., F1-scores)
+	-figure out way to batch run over different versions of a_local.py
+	
 Longer term:
 	projutils/summarize.py
 		summarize runs for a project
@@ -27,4 +31,4 @@ Done:
 	*work on prints to allow output to multiple outs
 	*get saving of figures and outputs working on above projects, then run and save complete project html files
 	?write document explaining constraints and benefits of using projutils
-
+	√get loss working for test data

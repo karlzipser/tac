@@ -66,7 +66,7 @@ stats_recorders['test accuracy']=Loss_Recorder(
         sampletime=0,
         nsamples=1,
     pct_to_show=p.percent_loss_to_show,
-    s=0.75,
+    s=0.25,
     name='test accuracy',
     )
 
