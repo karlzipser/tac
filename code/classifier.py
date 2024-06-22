@@ -139,8 +139,8 @@ for epoch in range(p.num_epochs):
             net.eval()
             test_inputs,test_labels = next(dataiter)
             test_inputs=test_inputs.to(device)
-            if show_timer.rcheck():
-                sh(torchvision.utils.make_grid(test_inputs),'test')
+            #if show_timer.rcheck():
+            #    sh(torchvision.utils.make_grid(test_inputs),'test examples')
             test_labels=test_labels.to(device)
             test_outputs=net(test_inputs)
             #show_sample_outputs(test_outputs,test_labels)

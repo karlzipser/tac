@@ -12,7 +12,7 @@ p=k2c(
 	percent_loss_to_show=100,
 	loss_s=.01,
 	test_sample_factor=6,
-	run_path='',#,project_tac/20Jun24_16h50m48s' #'project_tac/20Jun24_12h29m11s',
+	run_path='',
 	criterion=nn.MSELoss(),
 	#criterion=nn.CrossEntropyLoss()
 	#opt=optim.SGD,lr=0.001,momentum=0.9,
