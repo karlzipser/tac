@@ -1,5 +1,6 @@
 
 To do now:
+	-create branch stable2 for each project
 	-save samples of train and test images
 	-develop code to summarize, view, comment on and delete runs
 	-put kllm into tac-style project
@@ -21,6 +22,13 @@ Longer term:
 		delete runs
 		put run path into clipboard
 		load run into browser
+
+	rs:
+		rs.filter(src='project_tac',min_duration=300) # when calculating duration, ignore .html
+		rs.show(i=5)
+		rs.star(i=3)
+		rs.trash(i=[0,1,2])
+		rs.note(i=3,'great example')
 
 Done:
 	*use adam optimizer
