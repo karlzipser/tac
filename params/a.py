@@ -10,14 +10,13 @@ p=k2c(
 	save_time=60,
 	loss_time=10,
 	test_time=60,
-	
 	percent_loss_to_show=100,
 	loss_s=.01,
 	test_sample_factor=6,
 	run_path='',
 	criterion=nn.MSELoss(),
 	#criterion=nn.CrossEntropyLoss()
-	opt=optim.SGD,lr=0.001,momentum=0.9),
+	opt=optim.SGD,lr=0.001,momentum=0.9,
 	#opt=optim.Adam,lr=0.0001,momentum=0.,
 )
 
