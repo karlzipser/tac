@@ -18,9 +18,9 @@ p=k2c(
 	#opt=optim.SGD,lr=0.001,momentum=0.9,
 	opt=optim.Adam,lr=0.0001,momentum=None,
 	max_time=1*hours,
-	show_time=5,
-	noise_level=.25,
-	noise_p=.5
+	show_time=20,
+	noise_level=1.,
+	noise_p=.75
 )
 
 #EOF
