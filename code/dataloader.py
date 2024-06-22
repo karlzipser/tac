@@ -50,7 +50,7 @@ train_transform = transforms.Compose([
 test_transform = transforms.Compose([
 	transforms.ToTensor(),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-	]+geometric_transforms_list+color_transforms_list)
+	])
 
 trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                     download=True, transform=train_transform)
