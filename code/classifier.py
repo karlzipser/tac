@@ -180,7 +180,7 @@ for epoch in range(p.num_epochs):
         acc_mean,
         external_ctr=ec,)
     kprint(stats_recorders['test accuracy'].__dict__)
-    stats_recorders['test accuracy'].plot(fig='test accuracy',savefig=False)
+    stats_recorders['test accuracy'].plot(fig='test accuracy',savefig=True)
     spause()
 print('*** Finished Training')
 
