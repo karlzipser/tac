@@ -17,6 +17,7 @@ p=k2c(
 	criterion=nn.MSELoss(),
 	#criterion=nn.CrossEntropyLoss()
 	opt=optim.SGD,lr=0.001,momentum=0.9,
+	max_time=1*hours,
 	#opt=optim.Adam,lr=0.0001,momentum=0.,
 )
 

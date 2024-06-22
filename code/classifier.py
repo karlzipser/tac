@@ -78,6 +78,7 @@ else:
 
 save_timer=Timer(p.save_time)
 test_timer=Timer(p.test_time)
+max_timer=Timer(p.max_time)
 loss_ctr=0
 loss_ctr_all=0
 it_list=[]
@@ -103,6 +104,8 @@ def show_sample_outputs(outputs,labels):
         cm()
 
 for epoch in range(p.num_epochs):
+    if max_timer.check():
+        break
     kprint(
         files_to_dict(thispath),
         showtype=False,
@@ -186,13 +189,14 @@ for epoch in range(p.num_epochs):
     spause()
 print('*** Finished Training')
 
-save_net(net,weights_file)
+if False:
+    save_net(net,weights_file)
 
-net=get_net(device=device,net_class=Net,weights_file=weights_file)
+    net=get_net(device=device,net_class=Net,weights_file=weights_file)
 
-stats=get_accuracy(net,testloader,classes,device)
-print(stats)
-t2f(stats_file,stats)
+    stats=get_accuracy(net,testloader,classes,device)
+    print(stats)
+    t2f(stats_file,stats)
 
 print('*** Done')
 
