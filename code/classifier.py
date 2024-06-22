@@ -104,6 +104,8 @@ def show_sample_outputs(outputs,labels):
         plot(l,'b')
         cm()
 
+figure('train examples',figsize=(8,4))
+
 for epoch in range(p.num_epochs):
     if max_timer.check():
         break
@@ -116,10 +118,13 @@ for epoch in range(p.num_epochs):
     dataiter = iter(testloader2)
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
+        #print(p.noise_level and rnd()<p.noise_p)
+        if p.noise_level and rnd()<p.noise_p:
+            inputs+=rnd()*p.noise_level*torch.randn(inputs.size())
         optimizer.zero_grad()
         inputs=inputs.to(device)
-        #if show_timer.rcheck():
-        #    sh(torchvision.utils.make_grid(inputs),'train')
+        if show_timer.rcheck():
+            sh(torchvision.utils.make_grid(inputs),'train examples')
         outputs = net(inputs)
         targets=0*outputs.detach()
         for ii in range(targets.size()[0]):
