@@ -10,15 +10,18 @@ p=k2c(
 	percent_loss_to_show=100,
 	loss_s=.01,
 	test_sample_factor=6,
-	run_path='',
 	criterion=nn.MSELoss(),
 	#criterion=nn.CrossEntropyLoss()
 	#opt=optim.SGD,lr=0.001,momentum=0.9,
 	opt=optim.Adam,lr=0.0001,momentum=None,
 	max_time=1*hours,
-	show_time=20,
+	show_time=5,
 	noise_level=1.,
 	noise_p=.75
 )
+if host_name=='hiMac':
+	p.run_path='project_tac/21Jun24_23h10m13s'
+elif host_name=='jane':
+	p.run_path='project_tac/21Jun24_23h10m13s'
 
 #EOF
