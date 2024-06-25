@@ -69,7 +69,7 @@ transforms_dict2=dict(
     ColorJitter_hue=(-.03,.03),
 )
 geometric_transforms_list,color_transforms_list=get_transforms(
-	d=transforms_dict2,
+	d=transforms_dict,
 	image_size=(32,32))
 
 train_transform = transforms.Compose([

@@ -130,14 +130,14 @@ class GenDataset(Dataset):
         #sh(z55(image),title=d2s(image.max(),image.min()),r=0)
         if self.transform:
             image = self.transform(image)
-            image-=0.5
-            image*=2.
+            #image-=0.5
+            #image*=2.
         return image, self.labels[index]
 
 
 gen_train_transform = transforms.Compose([
     transforms.ToTensor(),
-    #transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ]+geometric_transforms_list+color_transforms_list)
 gen_traindata = GenDataset(root=opjD('data/gen0'), transform=gen_train_transform)
 gen_trainloader = DataLoader(gen_traindata, batch_size=p.batch_size, shuffle=True)
@@ -170,19 +170,20 @@ for epoch in range(p.num_epochs):
         i+=1
         if randint(2)<1:
             try:
-                printr(1)
+                #printr(1)
                 train_inputs,train_labels=next(train_dataiter)
+                cb(train_inputs.min(),train_inputs.max())
             except:
-                printr(2)
+                #printr(2)
                 train_dataiter=iter(trainloader)
                 train_inputs,train_labels=next(train_dataiter)
         else:
             try:
-                printr(3)
+                #printr(3)
                 train_inputs,train_labels=next(gen_train_dataiter)
-                #cg(train_inputs.min(),train_inputs.max())
+                cg(train_inputs.min(),train_inputs.max())
             except:
-                printr(4)
+                #printr(4)
                 gen_train_dataiter=iter(gen_trainloader)
                 train_inputs,train_labels=next(gen_train_dataiter)
         if p.noise_level and rnd()<p.noise_p:
