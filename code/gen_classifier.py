@@ -123,6 +123,8 @@ class GenDataset(Dataset):
                 self.images.append(image)
                 self.labels.append(fname(cf))
                 #print(self.images[-1],self.labels[-1])
+        print('len(self.images)=',
+            len(self.images),'len(self.labels)=',len(self.labels))
     def __len__(self):
         return len(self.images)
 
