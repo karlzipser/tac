@@ -172,7 +172,7 @@ for epoch in range(p.num_epochs):
             try:
                 #printr(1)
                 train_inputs,train_labels=next(train_dataiter)
-                cb(train_inputs.min(),train_inputs.max())
+                #cb(train_inputs.min(),train_inputs.max())
             except:
                 #printr(2)
                 train_dataiter=iter(trainloader)
@@ -181,7 +181,7 @@ for epoch in range(p.num_epochs):
             try:
                 #printr(3)
                 train_inputs,train_labels=next(gen_train_dataiter)
-                cg(train_inputs.min(),train_inputs.max())
+                #cg(train_inputs.min(),train_inputs.max())
             except:
                 #printr(4)
                 gen_train_dataiter=iter(gen_trainloader)
@@ -197,9 +197,9 @@ for epoch in range(p.num_epochs):
         for ii in range(targets.size()[0]):
             qq=train_labels[ii]
             if type(qq) is str:
-                qq=torch.tensor(classes2nums[qq])
-            #cg(qq,r=1)
-            targets[ii,qq,0,0]=1
+                pass#qq=torch.tensor(classes2nums[qq])
+            else: #cg(qq,r=1)
+                targets[ii,qq,0,0]=1
         #show_sample_outputs(outputs,train_labels)
         loss = criterion(torch.flatten(outputs,1),torch.flatten(targets,1))
         loss.backward()
