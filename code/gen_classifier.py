@@ -122,7 +122,7 @@ class GenDataset(Dataset):
             for image in sggo(cf,'*.png'):
                 self.images.append(image)
                 self.labels.append(fname(cf))
-                print(self.images[-1],self.labels[-1])
+                #print(self.images[-1],self.labels[-1])
     def __len__(self):
         return len(self.images)
 
