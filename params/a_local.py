@@ -22,6 +22,6 @@ p=k2c(
 if host_name=='hiMac':
 	p.run_path='project_tac/21Jun24_23h10m13s'
 elif host_name=='jane':
-	p.run_path='project_tac/21Jun24_23h10m13s'
+	p.run_path='project_tac/21Jun24_22h28m24s'
 
 #EOF
