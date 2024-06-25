@@ -14,7 +14,7 @@ p=k2c(
 	#criterion=nn.CrossEntropyLoss()
 	#opt=optim.SGD,lr=0.001,momentum=0.9,
 	opt=optim.Adam,lr=0.0001,momentum=None,
-	max_time=1*hours,
+	max_time=222222*hours,
 	show_time=5,
 	noise_level=1.,
 	noise_p=.75
@@ -22,6 +22,7 @@ p=k2c(
 if host_name=='hiMac':
 	p.run_path='project_tac/21Jun24_23h10m13s'
 elif host_name=='jane':
-	p.run_path='project_tac/24Jun24_23h04m02s'#'project_tac/21Jun24_22h28m24s'
+	p.run_path='project_tac/24Jun24_23h48m30s'
+	#'project_tac/24Jun24_23h04m02s'#'project_tac/21Jun24_22h28m24s'
 
 #EOF
