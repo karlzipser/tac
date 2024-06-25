@@ -110,6 +110,7 @@ def show_sample_outputs(outputs,train_labels):
 from torch.utils.data import DataLoader, Dataset
 class GenDataset(Dataset):
     def __init__(self, root, transform=None):
+        cy('GenDataset __init__()')
         self.root = root
         self.transform = transform
         self.images = []
@@ -135,12 +136,6 @@ class GenDataset(Dataset):
         return image, self.labels[index]
 
 
-gen_train_transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ]+geometric_transforms_list+color_transforms_list)
-gen_traindata = GenDataset(root=opjD('data/gen0'), transform=gen_train_transform)
-gen_trainloader = DataLoader(gen_traindata, batch_size=p.batch_size, shuffle=True)
 
 
 
@@ -148,7 +143,7 @@ classes2nums={}
 for i in rlen(classes):
     classes2nums[classes[i]]=i
 
-
+epoch_timer=Timer(5*minutes)
 
 
 figure('train examples',figsize=(8,4))
@@ -166,7 +161,9 @@ for epoch in range(p.num_epochs):
     train_dataiter = iter(trainloader)
     
     i=-1
-    while i<50000:
+    while True:
+        if epoch_timer.rcheck():
+            break
         i+=1
         if randint(2)<1:
             try:
@@ -184,6 +181,14 @@ for epoch in range(p.num_epochs):
                 #cg(train_inputs.min(),train_inputs.max())
             except:
                 #printr(4)
+                gen_train_transform = transforms.Compose([
+                    transforms.ToTensor(),
+                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                    ]+geometric_transforms_list+color_transforms_list)
+                gen_traindata = GenDataset(
+                    root=opjD('data/gen0'), transform=gen_train_transform)
+                gen_trainloader = DataLoader(
+                    gen_traindata, batch_size=p.batch_size, shuffle=True)
                 gen_train_dataiter=iter(gen_trainloader)
                 train_inputs,train_labels=next(gen_train_dataiter)
         if p.noise_level and rnd()<p.noise_p:
