@@ -204,6 +204,8 @@ for epoch in range(p.num_epochs):
         for ii in range(targets.size()[0]):
             qq=train_labels[ii]
             if type(qq) is str:
+                if max_timer.time()<10:
+                    print(qq)
                 pass#qq=torch.tensor(classes2nums[qq])
             else: #cg(qq,r=1)
                 targets[ii,qq,0,0]=1
