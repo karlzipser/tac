@@ -75,7 +75,7 @@ geometric_transforms_list,color_transforms_list=get_transforms(
 train_transform = transforms.Compose([
 	transforms.ToTensor(),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-	]+geometric_transforms_list+color_transforms_list)
+	]+geometric_transforms_list)#+color_transforms_list)
 test_transform = transforms.Compose([
 	transforms.ToTensor(),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
