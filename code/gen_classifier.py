@@ -186,7 +186,7 @@ for epoch in range(p.num_epochs):
                 gen_train_transform = transforms.Compose([
                     transforms.ToTensor(),
                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-                    ]+geometric_transforms_list+color_transforms_list)
+                    ]+geometric_transforms_list)
                 gen_traindata = GenDataset(
                     root=opjD('data/gen0'), transform=gen_train_transform)
                 gen_trainloader = DataLoader(
