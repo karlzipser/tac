@@ -16,7 +16,7 @@ p=k2c(
 	opt=optim.Adam,lr=0.0001,momentum=None,
 	max_time=222222*hours,
 	show_time=5,
-	noise_level=1.,
+	noise_level=0.,#1.,
 	noise_p=.75
 )
 if host_name=='hiMac':
