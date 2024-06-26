@@ -206,6 +206,7 @@ for epoch in range(p.num_epochs):
             if type(qq) is str:
                 if max_timer.time()<10:
                     print(qq)
+                assert targets[ii,:].sum()==0
                 pass#qq=torch.tensor(classes2nums[qq])
             else: #cg(qq,r=1)
                 targets[ii,qq,0,0]=1
