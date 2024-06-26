@@ -205,7 +205,7 @@ for epoch in range(p.num_epochs):
             qq=train_labels[ii]
             if type(qq) is str:
                 if max_timer.time()<10:
-                    print(qq)
+                    print(qq,targets[ii,:].sum())
                 assert targets[ii,:].sum()==0
                 pass#qq=torch.tensor(classes2nums[qq])
             else: #cg(qq,r=1)
