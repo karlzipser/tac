@@ -67,10 +67,10 @@ data_recorders=dict(
     )
 
 if p.run_path:
-    print('*** continuing from p.run_path=',p.run_path)
+    print('\n*** Continuing from p.run_path=',p.run_path)
     for task in data_recorders:
         data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
-        cb('loaded',task,len(data_recorders[task].processed))
+        #cb('loaded',task,len(data_recorders[task].processed))
     net=projutils.net_access.get_net(
         device=device,
         run_path=p.run_path,
@@ -212,7 +212,8 @@ for ig in range(10**20):
                 plt.legend(kys(classes),loc='upper left')
                 plt.savefig(
                     opj(save_path,
-                        data_recorders[task].name+'-'+get_safe_name('accuracy')+'.pdf'),
+                        data_recorders[task].name+'-'+get_safe_name(
+                            'accuracy')+'.pdf'),
                     bbox_inches='tight')
 
 
@@ -229,8 +230,9 @@ for ig in range(10**20):
                 plt.title(data_recorders[task].name+' f1-scores')
                 plt.legend(kys(classes),loc='upper left')
                 plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name(
-                        'f1-scores')+'.pdf'),
+                    opj(save_path,data_recorders[
+                        task].name+'-'+get_safe_name(
+                            'f1-scores')+'.pdf'),
                     bbox_inches='tight')
 
 
@@ -243,7 +245,8 @@ for ig in range(10**20):
                     c.append(processed[i]['confusion_matrix'])
                 c=na(c)
                 c=c.sum(axis=0)
-                c = (100*c.astype('float') / c.sum(axis=1)[:, np.newaxis]).astype(int)
+                c=(100*c.astype(
+                    'float')/c.sum(axis=1)[:,np.newaxis]).astype(int)
                 if False:
                     print(c)
                     print(c.sum(axis=1))
