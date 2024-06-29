@@ -12,8 +12,6 @@ To do now:
 	-generalize gathering of statistics over time (e.g., F1-scores)
 	-figure out way to batch run over different versions of a_local.py
 	
-	-save sample
-	
 Longer term:
 	projutils/summarize.py
 		summarize runs for a project

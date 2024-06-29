@@ -3,7 +3,7 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
-from ..params.runtime import *
+from ..params.a_local import *
 from projutils.data_augmentation import get_transforms
 
 _fill=(0,0,0)
@@ -81,55 +81,23 @@ test_transform = transforms.Compose([
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 	])
 
-trainset = torchvision.datasets.CIFAR10(
-    root='./data',
-    train=True,
-    download=True,
-    transform=train_transform,
-    )
-trainloader = torch.utils.data.DataLoader(
-    trainset,
-    batch_size=p.batch_size,
-    shuffle=True,
-    num_workers=p.num_workers,
-    )
+trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                    download=True, transform=train_transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=p.batch_size,
+                                    shuffle=True, num_workers=p.num_workers)
 
-testset = torchvision.datasets.CIFAR10(
-    root='./data',
-    train=False,
-    download=True,
-    transform=test_transform
-    )
-testloader = torch.utils.data.DataLoader(
-    testset,
-    batch_size=p.batch_size,
-    shuffle=True,
-    num_workers=p.num_workers,
-    )
-"""
-        return dict(
-                image=image,
-                labels=self.labels[index],
-                file=self.images[index],
-                index=index,
-            )
-"""
+testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                    download=True, transform=test_transform)
 
-classes = dict(
-    plane=0,
-    car=1,
-    bird=2,
-    cat=3,
-    deer=4,
-    dog=5,
-    frog=6,
-    horse=7,
-    ship=8,
-    truck=9,
-    )
+testloader = torch.utils.data.DataLoader(testset, batch_size=p.batch_size,
+                                    shuffle=True, num_workers=p.num_workers)
 
+testset2 = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                    download=True, transform=test_transform)
+testloader2 = torch.utils.data.DataLoader(testset2, batch_size=p.batch_size,
+                                    shuffle=True, num_workers=p.num_workers)
 
+classes = ('plane', 'car', 'bird', 'cat',
+           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-
-        
 #EOF
