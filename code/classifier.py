@@ -76,7 +76,7 @@ if p.run_path:
         latest=True,
     )
 else:
-    p.run_path=pname(thispath)
+    p.run_path=pname(thispath.replace(opjh()=+'/',''))
     net=projutils.net_access.get_net(device=device,net_class=Net)
 ##                                                                          ##
 ##############################################################################
