@@ -86,6 +86,7 @@ if p.opt==optim.Adam:
 else:
     optimizer = p.opt(net.parameters(),lr=p.lr,momentum=p.momentum)
 p.timer.show.trigger()
+p.timer.save.trigger()
 best_loss=1e999
 printr_timer=Timer(1)
 

@@ -29,10 +29,10 @@ p=k2c(
 for k in p.times.__dict__:
     p.timer.__dict__[k]=Timer(p.times.__dict__[k])
 _proj_dict=dict(
-    hiMac='project_tac/29Jun24_11h51m47s',
+    hiMac='project_tac/29Jun24_13h37m00s',
     jane='project_tac/29Jun24_12h22m37s',
     jack='',
-    gauss='',
+    gauss='project_tac/29Jun24_13h34m59s',
 )
 assert host_name in _proj_dict
 p.run_path=_proj_dict[host_name]
