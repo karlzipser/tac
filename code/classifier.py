@@ -173,7 +173,7 @@ for ig in range(10**20):
         from sklearn.metrics import f1_score
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
-        n=1
+        n=10
         #processed=loD('processed');clf()
         try:
             for task in data_recorders:
@@ -226,8 +226,10 @@ for ig in range(10**20):
                         data_recorders[task].name+'-'+get_safe_name('confusion_matrix-')+str(ig)+'.pdf'),
                     bbox_inches='tight')
 
-
-                figure(1);clf()
+            figure(1)
+            clf()
+            for task in data_recorders:
+                processed=data_recorders[task].processed
                 f=[]
                 igs=[]
                 for pr in processed:
@@ -236,11 +238,12 @@ for ig in range(10**20):
                 x=moving_average(igs,n)
                 y=moving_average(f,n)
                 plot(x,y,label=classes[c])
-                plt.title(data_recorders[task].name+' loss')
-                plt.legend(kys(classes),loc='upper left')
-                plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('loss')+'.pdf'),
-                    bbox_inches='tight')
+            plt.title('loss')
+            plt.legend(kys(classes),loc='upper left')
+            plt.savefig(
+                opj(save_path,get_safe_name('loss')+'.pdf'),
+                bbox_inches='tight')
+
         except KeyboardInterrupt:
             cr('*** KeyboardInterrupt ***')
             sys.exit()
