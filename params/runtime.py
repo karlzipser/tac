@@ -1,4 +1,6 @@
 from utilz2 import *
+import projutils
+
 _t=30
 p=k2c(
     ti='p',
@@ -13,23 +15,38 @@ p=k2c(
         max=999*hours,
     ),
     timer=k2c(ti='timer'),
-    #percent_loss_to_show=100,
-    #loss_s=.01,
-    #test_sample_factor=6,
     #criterion=nn.CrossEntropyLoss()
     #opt=optim.SGD,lr=0.001,momentum=0.9,
     criterion=nn.MSELoss(),
     opt=optim.Adam,lr=0.0001,momentum=None,
-    #max_time=222222*hours,
-    noise_level=1.,
-    noise_p=1.,
     gen_data_path=opjD('data/gen0'),
+    task_list=5*['train']+1*['test']+1*['train_no_noise'],
+    data_recorders=dict(
+        train=projutils.net_data_recorder.Data_Recorder(
+            dataloader='trainloader',
+            name='train',
+            noise_level=1.,
+            noise_p=1.,
+            ),
+        train_no_noise=projutils.net_data_recorder.Data_Recorder(
+            dataloader='trainloader',
+            name='train_no_noise',
+            noise_level=0.,
+            noise_p=0.,
+            ),
+        test=projutils.net_data_recorder.Data_Recorder(
+            dataloader='testloader',
+            name='test',
+            noise_level=0.,
+            noise_p=0.,
+            ),
+        ),
 )
 
 for k in p.times.__dict__:
     p.timer.__dict__[k]=Timer(p.times.__dict__[k])
 _proj_dict=dict(
-    hiMac='project_tac/29Jun24_13h37m00s',
+    hiMac='project_tac/29Jun24_15h19m10s',
     jane='project_tac/29Jun24_12h22m37s',
     jack='',
     gauss='project_tac/29Jun24_13h34m59s',

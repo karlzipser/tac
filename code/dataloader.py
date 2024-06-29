@@ -94,6 +94,20 @@ trainloader = torch.utils.data.DataLoader(
     num_workers=p.num_workers,
     )
 
+trainset_test_transform = torchvision.datasets.CIFAR10(
+    root='./data',
+    train=True,
+    download=True,
+    transform=test_transform,
+    )
+trainloader_test_transform = torch.utils.data.DataLoader(
+    trainset_test_transform,
+    batch_size=p.batch_size,
+    shuffle=True,
+    num_workers=p.num_workers,
+    )
+
+
 testset = torchvision.datasets.CIFAR10(
     root='./data',
     train=False,
@@ -106,14 +120,13 @@ testloader = torch.utils.data.DataLoader(
     shuffle=True,
     num_workers=p.num_workers,
     )
-"""
-        return dict(
-                image=image,
-                labels=self.labels[index],
-                file=self.images[index],
-                index=index,
-            )
-"""
+
+
+loader_dic=dict(
+    trainloader=trainloader,
+    testloader=testloader,
+    trainloader_test_transform=trainset_test_transform,
+    )
 
 classes = dict(
     plane=0,

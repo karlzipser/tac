@@ -7,7 +7,7 @@ from utilz2 import *
 import sys,os
 import projutils
 from ..params.runtime import *
-from .dataloader import trainloader,testloader,classes
+from .dataloader import loader_dic,classes
 from ..net.code.net import *
 ##                                                                          ##
 ##############################################################################
@@ -55,22 +55,16 @@ def show_sample_outputs(inputs,outputs,labels,ig,name,save_path):
 ##############################################################################
 ##                                                                          ##
 
-data_recorders=dict(
-    train=projutils.net_data_recorder.Data_Recorder(
-        dataloader=trainloader,
-        name='train',
-        ),
-    test=projutils.net_data_recorder.Data_Recorder(
-        dataloader=testloader,
-        name='test',
-        ),
-    )
+
+for k in p.data_recorders:
+    p.data_recorders[k].dataloader=loader_dic[p.data_recorders[k].dataloader]
+
 
 if p.run_path:
     print('\n*** Continuing from p.run_path=',p.run_path)
-    for task in data_recorders:
-        data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
-        #cb('loaded',task,len(data_recorders[task].processed))
+    for task in p.data_recorders:
+        p.data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
+        #cb('loaded',task,len(p.data_recorders[task].processed))
     net=projutils.net_access.get_net(
         device=device,
         run_path=p.run_path,
@@ -102,7 +96,7 @@ def moving_average(data, window_size):
 ##                                                                          ##
 print('*** Start Training . . .')
 
-task_list=['train']*5+['test']*1
+
 
 for ig in range(10**20):
     
@@ -113,29 +107,30 @@ for ig in range(10**20):
 
     if printr_timer.rcheck():
         l=[]
-        for task in data_recorders:
-            l.append(len(data_recorders[task].processed))
+        for task in p.data_recorders:
+            l.append(len(p.data_recorders[task].processed))
         l=tuple(l)
         printr(d2n(thispath.replace(opjh(),''),': ig=',ig,', t=',int(p.timer.max.time()),'s processed=',l))
 
-    task=np.random.choice(task_list)
+    task=np.random.choice(p.task_list)
 
     try:
-        inputs,labels=next(data_recorders[task].dataiter)
+        inputs,labels=next(p.data_recorders[task].dataiter)
     except:
-        data_recorders[task].dataiter=iter(data_recorders[task].dataloader)
-        inputs,labels=next(data_recorders[task].dataiter)
+        p.data_recorders[task].dataiter=iter(p.data_recorders[task].dataloader)
+        inputs,labels=next(p.data_recorders[task].dataiter)
     inputs=inputs.to(device)
 
     #
     ##########################################################################
-    # 
-    if 'test' not in data_recorders[task].name:
-        assert 'train' in data_recorders[task].name
+    #
+    if p.data_recorders[task].noise_level and rnd()<p.data_recorders[task].noise_p:
+        inputs+=rnd()*p.data_recorders[task].noise_level*torch.randn(
+            inputs.size()).to(device)
+            
+    if 'test' not in p.data_recorders[task].name:
+        assert 'train' in p.data_recorders[task].name
         net.train()
-        if p.noise_level and rnd()<p.noise_p:
-            inputs+=rnd()*p.noise_level*torch.randn(
-                inputs.size()).to(device)
         optimizer.zero_grad()
     else:
         net.eval()
@@ -146,7 +141,7 @@ for ig in range(10**20):
         targets[i,labels[i],0,0]=1
     
     loss = p.criterion(torch.flatten(outputs,1),torch.flatten(targets,1))
-    if 'test' not in data_recorders[task].name:
+    if 'test' not in p.data_recorders[task].name:
         loss.backward()
         optimizer.step()
     #
@@ -161,16 +156,16 @@ for ig in range(10**20):
             loss=loss.detach().cpu()
         )
 
-    data_recorders[task].add(_d)
+    p.data_recorders[task].add(_d)
 
     #
     ##########################################################################
     #    
 
     if p.timer.show.rcheck():
-        for task in data_recorders:
+        for task in p.data_recorders:
             #cb(task)
-            latest=data_recorders[task].latest()
+            latest=p.data_recorders[task].latest()
             if not latest:
                 continue
             show_sample_outputs(
@@ -178,11 +173,11 @@ for ig in range(10**20):
                 latest['outputs'],
                 latest['labels'],
                 ig,
-                data_recorders[task].name+'_outputs',
+                p.data_recorders[task].name+'_outputs',
                 save_path=opj(paths.figures),
                 )
             sh(torchvision.utils.make_grid(latest['inputs']),
-                title=data_recorders[task].name+'_examples',use_spause=False,
+                title=p.data_recorders[task].name+'_examples',use_spause=False,
                     save_path=opj(paths.figures))
         #
         ######################################################################
@@ -191,11 +186,11 @@ for ig in range(10**20):
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
 
-        if True:#try:
+        try:
 
-            for task in data_recorders:
+            for task in p.data_recorders:
 
-                processed=data_recorders[task].processed
+                processed=p.data_recorders[task].processed
                 n=max(1,len(processed)//100)
                 if not len(processed):
                     continue
@@ -209,11 +204,11 @@ for ig in range(10**20):
                     x=moving_average(igs,n)
                     y=moving_average(f,n)
                     plot(x,y,label=classes[c])
-                plt.title(data_recorders[task].name+' accuracy')
+                plt.title(p.data_recorders[task].name+' accuracy')
                 plt.legend(kys(classes),loc='upper left')
                 plt.savefig(
                     opj(save_path,
-                        data_recorders[task].name+'-'+get_safe_name(
+                        p.data_recorders[task].name+'-'+get_safe_name(
                             'accuracy')+'.pdf'),
                     bbox_inches='tight')
 
@@ -228,10 +223,10 @@ for ig in range(10**20):
                     x=moving_average(igs,n)
                     y=moving_average(f,n)
                     plot(x,y,label=classes[c])
-                plt.title(data_recorders[task].name+' f1-scores')
+                plt.title(p.data_recorders[task].name+' f1-scores')
                 plt.legend(kys(classes),loc='upper left')
                 plt.savefig(
-                    opj(save_path,data_recorders[
+                    opj(save_path,p.data_recorders[
                         task].name+'-'+get_safe_name(
                             'f1-scores')+'.pdf'),
                     bbox_inches='tight')
@@ -256,17 +251,17 @@ for ig in range(10**20):
                     display_labels=kys(classes))
                 disp.plot(ax=ax,cmap=plt.cm.Blues)
                 plt.title(
-                    d2s(data_recorders[task].name,'confusion_matrix',ig))
+                    d2s(p.data_recorders[task].name,'confusion_matrix',ig))
                 plt.savefig(
                     opj(save_path,
-                        data_recorders[task].name+'-'+get_safe_name(
+                        p.data_recorders[task].name+'-'+get_safe_name(
                             'confusion_matrix.pdf')),
                     bbox_inches='tight')
 
             figure(1)
             clf()
-            for task in data_recorders:
-                processed=data_recorders[task].processed
+            for task in p.data_recorders:
+                processed=p.data_recorders[task].processed
                 f=[]
                 igs=[]
                 for pr in processed:
@@ -274,13 +269,13 @@ for ig in range(10**20):
                     igs.append(pr['ig'])
                 x=moving_average(igs,n)
                 y=moving_average(f,n)
-                plot(x,y,label=data_recorders[task].name)
+                plot(x,y,label=p.data_recorders[task].name)
             plt.title('loss')
-            plt.legend(kys(data_recorders),loc='upper right')
+            plt.legend(kys(p.data_recorders),loc='upper right')
             plt.savefig(
                 opj(save_path,get_safe_name('loss')+'.pdf'),
                 bbox_inches='tight')
-        """
+        
         except KeyboardInterrupt:
             cr('*** KeyboardInterrupt ***')
             sys.exit()
@@ -289,7 +284,7 @@ for ig in range(10**20):
             file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print('Exception!')
             print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
-        """
+        
 
     #
     ##########################################################################
@@ -299,8 +294,8 @@ for ig in range(10**20):
 
     if p.timer.save.rcheck():
         projutils.net_access.save_net(net,paths.weights_latest)
-        for task in data_recorders:
-            data_recorders[task].save(paths.stats)
+        for task in p.data_recorders:
+            p.data_recorders[task].save(paths.stats)
 
 print('*** Finished Training')
 
