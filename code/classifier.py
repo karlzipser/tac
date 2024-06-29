@@ -67,6 +67,7 @@ data_recorders=dict(
     )
 
 if p.run_path:
+    print('*** p.run_path=',p.run_path)
     for task in data_recorders:
         data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
         cb('loaded',task,len(data_recorders[task].processed))
@@ -76,7 +77,7 @@ if p.run_path:
         latest=True,
     )
 else:
-    p.run_path=pname(thispath.replace(opjh()=+'/',''))
+    p.run_path=pname(thispath.replace(opjh(),''))
     net=projutils.net_access.get_net(device=device,net_class=Net)
 ##                                                                          ##
 ##############################################################################
@@ -244,9 +245,8 @@ for ig in range(10**20):
                 c=na(c)
                 c=c.sum(axis=0)
                 c = (100*c.astype('float') / c.sum(axis=1)[:, np.newaxis]).astype(int)
-                if True:
-                    #print(c)
-                    #print(c.sum(axis=0))
+                if False:
+                    print(c)
                     print(c.sum(axis=1))
                 disp=ConfusionMatrixDisplay(
                     confusion_matrix=c,

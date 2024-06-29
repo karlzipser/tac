@@ -29,7 +29,7 @@ p=k2c(
 for k in p.times.__dict__:
     p.timer.__dict__[k]=Timer(p.times.__dict__[k])
 _proj_dict=dict(
-    hiMac='project_tac/29Jun24_10h40m23s',
+    hiMac='',
     jane='',
     jack='',
     gauss=''
