@@ -127,7 +127,7 @@ for ig in range(10**20):
     if p.data_recorders[task].noise_level and rnd()<p.data_recorders[task].noise_p:
         inputs+=rnd()*p.data_recorders[task].noise_level*torch.randn(
             inputs.size()).to(device)
-            
+
     if 'test' not in p.data_recorders[task].name:
         assert 'train' in p.data_recorders[task].name
         net.train()
@@ -186,7 +186,7 @@ for ig in range(10**20):
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
 
-        try:
+        if True:#try:
 
             for task in p.data_recorders:
 
@@ -232,31 +232,41 @@ for ig in range(10**20):
                     bbox_inches='tight')
 
 
-                fig=figure(1);clf()
-                ax=fig.add_subplot(111)
-                a=max(1,int(len(processed)*0.9))
-                b=len(processed)
-                c=[]
-                for i in range(a,b):
-                    c.append(processed[i]['confusion_matrix'])
-                c=na(c)
-                c=c.sum(axis=0)
-                c=(100*c.astype(
-                    'float')/c.sum(axis=1)[:,np.newaxis]).astype(int)
-                if False:
-                    print(c)
-                    print(c.sum(axis=1))
-                disp=ConfusionMatrixDisplay(
-                    confusion_matrix=c,
-                    display_labels=kys(classes))
-                disp.plot(ax=ax,cmap=plt.cm.Blues)
-                plt.title(
-                    d2s(p.data_recorders[task].name,'confusion_matrix',ig))
-                plt.savefig(
-                    opj(save_path,
-                        p.data_recorders[task].name+'-'+get_safe_name(
-                            'confusion_matrix.pdf')),
-                    bbox_inches='tight')
+                try:
+                    if len(processed)>1:
+                        fig=figure(1);clf()
+                        ax=fig.add_subplot(111)
+                        a=max(1,int(len(processed)*0.9))
+                        b=len(processed)
+                        c=[]
+                        for i in range(a,b):
+                            c.append(processed[i]['confusion_matrix'])
+                        c=na(c)
+                        c=c.sum(axis=0)
+                        c=(100*c.astype(
+                            'float')/c.sum(axis=1)[:,np.newaxis]).astype(int)
+
+                        disp=ConfusionMatrixDisplay(
+                            confusion_matrix=c,
+                            display_labels=kys(classes))
+                        disp.plot(ax=ax,cmap=plt.cm.Blues)
+                        plt.title(
+                            d2s(p.data_recorders[task].name,'confusion_matrix',ig))
+                        plt.savefig(
+                            opj(save_path,
+                                p.data_recorders[task].name+'-'+get_safe_name(
+                                    'confusion_matrix.pdf')),
+                            bbox_inches='tight')
+                except KeyboardInterrupt:
+                    cr('*** KeyboardInterrupt ***')
+                    sys.exit()
+                except Exception as e:
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    print('Exception!')
+                    print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
+
+
 
             figure(1)
             clf()
@@ -275,7 +285,7 @@ for ig in range(10**20):
             plt.savefig(
                 opj(save_path,get_safe_name('loss')+'.pdf'),
                 bbox_inches='tight')
-        
+        """
         except KeyboardInterrupt:
             cr('*** KeyboardInterrupt ***')
             sys.exit()
@@ -284,7 +294,7 @@ for ig in range(10**20):
             file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print('Exception!')
             print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
-        
+        """
 
     #
     ##########################################################################
