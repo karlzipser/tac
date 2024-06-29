@@ -84,8 +84,7 @@ if p.opt==optim.Adam:
     optimizer = p.opt(net.parameters(),lr=p.lr)
 else:
     optimizer = p.opt(net.parameters(),lr=p.lr,momentum=p.momentum)
-p.timer.train_show.trigger()
-p.timer.test_show.trigger()
+p.timer.show.trigger()
 best_loss=1e999
 printr_timer=Timer(1)
 
@@ -166,7 +165,7 @@ for ig in range(10**20):
     ##########################################################################
     #    
 
-    if p.timer.train_show.rcheck():
+    if p.timer.show.rcheck():
         for task in data_recorders:
             #cb(task)
             latest=data_recorders[task].latest()
@@ -182,10 +181,10 @@ for ig in range(10**20):
                 )
             sh(torchvision.utils.make_grid(latest['inputs']),
                 title=data_recorders[task].name+'_examples',use_spause=False,
-                save_path=opj(paths.figures))
-    #
-    ##########################################################################
-    #    
+                    save_path=opj(paths.figures))
+        #
+        ######################################################################
+        #    
         from sklearn.metrics import f1_score
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
