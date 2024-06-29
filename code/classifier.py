@@ -180,7 +180,7 @@ for ig in range(10**20):
             for task in data_recorders:
 
                 processed=data_recorders[task].processed
-                n=max(1,int(np.log10(len(processed)))
+                n=max(1,int(np.log10(len(processed))))
                     cg(n)
                 if not len(processed):
                     continue
