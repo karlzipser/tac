@@ -173,10 +173,12 @@ for ig in range(10**20):
         from sklearn.metrics import f1_score
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
-        n=10
+        n=3
         #processed=loD('processed');clf()
         try:
+
             for task in data_recorders:
+
                 processed=data_recorders[task].processed
                 if not len(processed):
                     continue
@@ -237,7 +239,7 @@ for ig in range(10**20):
                     igs.append(pr['ig'])
                 x=moving_average(igs,n)
                 y=moving_average(f,n)
-                plot(x,y,legend=data_recorders[task].name)
+                plot(x,y,label=data_recorders[task].name)
             plt.title('loss')
             plt.legend(kys(classes),loc='upper left')
             plt.savefig(
