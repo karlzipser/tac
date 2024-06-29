@@ -111,7 +111,11 @@ for ig in range(10**20):
         break
 
     if printr_timer.rcheck():
-        printr(d2n(p.run_path,' ig=',ig,', t=',int(printr_timer.time()),'s'))
+        l=[]
+        for task in data_recorders:
+            l.append(len(data_recorders[task].processed))
+        l=tuple(l)
+        printr(d2n(p.run_path,': ig=',ig,', t=',int(p.timer.max.time()),'s processed=',l))
 
     task=np.random.choice(task_list)
 
@@ -191,7 +195,6 @@ for ig in range(10**20):
             for task in data_recorders:
 
                 processed=data_recorders[task].processed
-                cb(task,len(processed))
                 n=max(1,len(processed)//100)
                 if not len(processed):
                     continue
@@ -239,7 +242,7 @@ for ig in range(10**20):
                 for i in range(a,b):
                     c.append(processed[i]['confusion_matrix'])
                 c=na(c).mean(axis=0)
-                c=(100*z2o(c)).astype(int)
+                c=c.astype(int) # normalize properly
                 disp=ConfusionMatrixDisplay(
                     confusion_matrix=c,
                     display_labels=kys(classes))
