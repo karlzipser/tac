@@ -152,7 +152,7 @@ for ig in range(10**20):
 
     if p.timer.train_show.rcheck():
         for task in data_recorders:
-            cb(task)
+            #cb(task)
             latest=data_recorders[task].latest()
             if not latest:
                 continue
@@ -173,13 +173,15 @@ for ig in range(10**20):
         from sklearn.metrics import f1_score
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
-        n=3
+        #n=3
         #processed=loD('processed');clf()
         try:
 
             for task in data_recorders:
 
                 processed=data_recorders[task].processed
+                n=max(1,int(np.log10(len(processed)))
+                    cg(n)
                 if not len(processed):
                     continue
                 figure(1);clf()
