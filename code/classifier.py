@@ -67,7 +67,7 @@ data_recorders=dict(
     )
 
 if p.run_path:
-    print('*** p.run_path=',p.run_path)
+    print('*** continuing from p.run_path=',p.run_path)
     for task in data_recorders:
         data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
         cb('loaded',task,len(data_recorders[task].processed))
