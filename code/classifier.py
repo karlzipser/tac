@@ -1,4 +1,4 @@
-## 70                                                                       ##
+## 79                                                                       ##
 ##############################################################################
 ##                                                                          ##
 print(__file__)
@@ -54,7 +54,7 @@ def show_sample_outputs(inputs,outputs,labels,ig,name,save_path):
 ##                                                                          ##
 ##############################################################################
 ##                                                                          ##
-net=projutils.net_access.get_net(device=device,net_class=Net)
+
 data_recorders=dict(
     train=projutils.net_data_recorder.Data_Recorder(
         dataloader=trainloader,
@@ -65,6 +65,18 @@ data_recorders=dict(
         name='test',
         ),
     )
+
+if p.run_path:
+    for task in data_recorders:
+        data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
+        cb('loaded',task,len(data_recorders[task].processed))
+    net=projutils.net_access.get_net(
+        device=device,
+        run_path=p.run_path,
+        latest=True,
+    )
+else:
+    net=projutils.net_access.get_net(device=device,net_class=Net)
 ##                                                                          ##
 ##############################################################################
 ##                                                                          ##
@@ -99,7 +111,7 @@ for ig in range(10**20):
         break
 
     if printr_timer.rcheck():
-        printr(d2n('ig=',ig,', t=',int(printr_timer.time()),'s'))
+        printr(d2n(p.run_path,' ig=',ig,', t=',int(printr_timer.time()),'s'))
 
     task=np.random.choice(task_list)
 
@@ -173,15 +185,14 @@ for ig in range(10**20):
         from sklearn.metrics import f1_score
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
         save_path=opj(paths.figures)
-        #n=3
-        #processed=loD('processed');clf()
-        try:
+
+        if True:#try:
 
             for task in data_recorders:
 
                 processed=data_recorders[task].processed
+                cb(task,len(processed))
                 n=max(1,len(processed)//100)
-                cg(n)
                 if not len(processed):
                     continue
                 figure(1);clf()
@@ -197,7 +208,8 @@ for ig in range(10**20):
                 plt.title(data_recorders[task].name+' accuracy')
                 plt.legend(kys(classes),loc='upper left')
                 plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('accuracy')+'.pdf'),
+                    opj(save_path,
+                        data_recorders[task].name+'-'+get_safe_name('accuracy')+'.pdf'),
                     bbox_inches='tight')
 
 
@@ -214,20 +226,30 @@ for ig in range(10**20):
                 plt.title(data_recorders[task].name+' f1-scores')
                 plt.legend(kys(classes),loc='upper left')
                 plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('f1-scores')+'.pdf'),
+                    opj(save_path,data_recorders[task].name+'-'+get_safe_name(
+                        'f1-scores')+'.pdf'),
                     bbox_inches='tight')
 
 
                 fig=figure(1);clf()
                 ax=fig.add_subplot(111)
+                a=max(1,int(len(processed)*0.9))
+                b=len(processed)
+                c=[]
+                for i in range(a,b):
+                    c.append(processed[i]['confusion_matrix'])
+                c=na(c).mean(axis=0)
+                c=(100*z2o(c)).astype(int)
                 disp=ConfusionMatrixDisplay(
-                    confusion_matrix=processed[-1]['confusion_matrix'],
+                    confusion_matrix=c,
                     display_labels=kys(classes))
                 disp.plot(ax=ax,cmap=plt.cm.Blues)
-                plt.title(d2s(data_recorders[task].name,'confusion_matrix',ig))
+                plt.title(
+                    d2s(data_recorders[task].name,'confusion_matrix',ig))
                 plt.savefig(
                     opj(save_path,
-                        data_recorders[task].name+'-'+get_safe_name('confusion_matrix-')+str(ig)+'.pdf'),
+                        data_recorders[task].name+'-'+get_safe_name(
+                            'confusion_matrix.pdf')),
                     bbox_inches='tight')
 
             figure(1)
@@ -247,7 +269,7 @@ for ig in range(10**20):
             plt.savefig(
                 opj(save_path,get_safe_name('loss')+'.pdf'),
                 bbox_inches='tight')
-
+        """
         except KeyboardInterrupt:
             cr('*** KeyboardInterrupt ***')
             sys.exit()
@@ -256,6 +278,7 @@ for ig in range(10**20):
             file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print('Exception!')
             print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
+        """
 
     #
     ##########################################################################
@@ -263,9 +286,10 @@ for ig in range(10**20):
 
 
 
-    #if p.timer.save.rcheck():
-    #    projutils.net_access.save_net(net,paths.weights_latest)
-
+    if p.timer.save.rcheck():
+        projutils.net_access.save_net(net,paths.weights_latest)
+        for task in data_recorders:
+            data_recorders[task].save(paths.stats)
 
 print('*** Finished Training')
 
