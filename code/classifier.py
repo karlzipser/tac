@@ -77,7 +77,6 @@ if p.run_path:
         latest=True,
     )
 else:
-    p.run_path=pname(thispath.replace(opjh(),''))
     net=projutils.net_access.get_net(device=device,net_class=Net)
 ##                                                                          ##
 ##############################################################################
@@ -116,7 +115,7 @@ for ig in range(10**20):
         for task in data_recorders:
             l.append(len(data_recorders[task].processed))
         l=tuple(l)
-        printr(d2n(p.run_path,': ig=',ig,', t=',int(p.timer.max.time()),'s processed=',l))
+        printr(d2n(thispath.replace(opjh(),''),': ig=',ig,', t=',int(p.timer.max.time()),'s processed=',l))
 
     task=np.random.choice(task_list)
 
