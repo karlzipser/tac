@@ -7,7 +7,7 @@ from utilz2 import *
 import sys,os
 import projutils
 from ..params.runtime import *
-from .dataloader import trainloader,testloader,classes
+from .dataloader import trainloader,testloader
 from ..net.code.net import *
 ##                                                                          ##
 ##############################################################################
@@ -77,13 +77,6 @@ p.timer.test_show.trigger()
 best_loss=1e999
 printr_timer=Timer(1)
 
-
-def moving_average(data, window_size):
-    """ Smooth data using a moving average """
-    cumsum = np.cumsum(data)
-    cumsum[window_size:] = cumsum[window_size:] - cumsum[:-window_size]
-    return cumsum[window_size - 1:] / window_size
-
 ##                                                                          ##
 ##############################################################################
 ##                                                                          ##
@@ -110,9 +103,9 @@ for ig in range(10**20):
         inputs,labels=next(data_recorders[task].dataiter)
     inputs=inputs.to(device)
 
+
+    ### train or eval ##############################
     #
-    ##########################################################################
-    # 
     if 'test' not in data_recorders[task].name:
         assert 'train' in data_recorders[task].name
         net.train()
@@ -133,8 +126,9 @@ for ig in range(10**20):
         loss.backward()
         optimizer.step()
     #
-    ##########################################################################
-    # 
+    ################################################
+
+
     _d=dict(
             ig=ig,
             inputs=inputs.detach().cpu(),
@@ -148,9 +142,7 @@ for ig in range(10**20):
         del loss
     data_recorders[task].add(_d)
 
-    #
-    ##########################################################################
-    #    
+    
 
     if p.timer.train_show.rcheck():
         for task in data_recorders:
@@ -168,96 +160,9 @@ for ig in range(10**20):
             sh(torchvision.utils.make_grid(latest['inputs']),
                 title=data_recorders[task].name+'_examples',use_spause=False,
                 save_path=opj(paths.figures))
-    #
-    ##########################################################################
-    #    
-        from sklearn.metrics import f1_score
-        from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-        save_path=opj(paths.figures)
-        n=1
-        #processed=loD('processed');clf()
-        try:
-            for task in data_recorders:
-                processed=data_recorders[task].processed
-                if not len(processed):
-                    continue
-                figure(1);clf()
-                for c in classes:
-                    f=[]
-                    ig=[]
-                    for pr in processed:
-                        f.append(pr['accuracy'][classes[c]])
-                        ig.append(pr['ig'])
-                    x=moving_average(ig,n)
-                    y=moving_average(f,n)
-                    plot(x,y,label=classes[c])
-                plt.title(data_recorders[task].name+' accuracy')
-                plt.legend(kys(classes),loc='upper left')
-                plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('accuracy')+'.pdf'),
-                    bbox_inches='tight')
 
-
-                figure(1);clf()
-                for c in classes:
-                    f=[]
-                    ig=[]
-                    for pr in processed:
-                        f.append(pr['f1_scores'][classes[c]])
-                        ig.append(pr['ig'])
-                    x=moving_average(ig,n)
-                    y=moving_average(f,n)
-                    plot(x,y,label=classes[c])
-                plt.title(data_recorders[task].name+' f1-scores')
-                plt.legend(kys(classes),loc='upper left')
-                plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('f1-scores')+'.pdf'),
-                    bbox_inches='tight')
-
-
-                fig=figure(1);clf()
-                ax=fig.add_subplot(111)
-                disp=ConfusionMatrixDisplay(
-                    confusion_matrix=processed[-1]['confusion_matrix'],
-                    display_labels=kys(classes))
-                disp.plot(ax=ax,cmap=plt.cm.Blues)
-                plt.title(data_recorders[task].name+' confusion_matrix')
-                plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('confusion_matrix')+'.pdf'),
-                    bbox_inches='tight')
-
-
-                figure(1);clf()
-                f=[]
-                ig=[]
-                for pr in processed:
-                    f.append(pr['loss'])
-                    ig.append(pr['ig'])
-                x=moving_average(ig,n)
-                y=moving_average(f,n)
-                plot(x,y,label=classes[c])
-                plt.title(data_recorders[task].name+' loss')
-                plt.legend(kys(classes),loc='upper left')
-                plt.savefig(
-                    opj(save_path,data_recorders[task].name+'-'+get_safe_name('loss')+'.pdf'),
-                    bbox_inches='tight')
-        except KeyboardInterrupt:
-            cr('*** KeyboardInterrupt ***')
-            sys.exit()
-        except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print('Exception!')
-            print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
-
-    #
-    ##########################################################################
-    #    
-
-
-
-    #if p.timer.save.rcheck():
-    #    projutils.net_access.save_net(net,paths.weights_latest)
+    if p.timer.save.rcheck():
+        projutils.net_access.save_net(net,paths.weights_latest)
 
 
 print('*** Finished Training')

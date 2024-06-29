@@ -1,5 +1,5 @@
 from utilz2 import *
-t=30
+t=10
 p=k2c(
     ti='p',
     batch_size=16,
