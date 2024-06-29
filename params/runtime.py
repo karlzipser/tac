@@ -30,7 +30,7 @@ for k in p.times.__dict__:
     p.timer.__dict__[k]=Timer(p.times.__dict__[k])
 _proj_dict=dict(
     hiMac='',
-    jane='project_tac/29Jun24_12h18m58s',
+    jane='',
     jack='',
     gauss=''
 )
