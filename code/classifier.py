@@ -241,7 +241,7 @@ for ig in range(10**20):
                 y=moving_average(f,n)
                 plot(x,y,label=data_recorders[task].name)
             plt.title('loss')
-            plt.legend(kys(classes),loc='upper left')
+            plt.legend(kys(data_recorders),loc='upper left')
             plt.savefig(
                 opj(save_path,get_safe_name('loss')+'.pdf'),
                 bbox_inches='tight')
