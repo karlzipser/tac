@@ -181,7 +181,7 @@ for ig in range(10**20):
 
                 processed=data_recorders[task].processed
                 n=max(1,int(np.log10(len(processed))))
-                    cg(n)
+                cg(n)
                 if not len(processed):
                     continue
                 figure(1);clf()
