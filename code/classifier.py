@@ -241,8 +241,13 @@ for ig in range(10**20):
                 c=[]
                 for i in range(a,b):
                     c.append(processed[i]['confusion_matrix'])
-                c=na(c).mean(axis=0)
-                c=c.astype(int) # normalize properly
+                c=na(c)
+                c=c.sum(axis=0)
+                c = (100*c.astype('float') / c.sum(axis=1)[:, np.newaxis]).astype(int)
+                if True:
+                    #print(c)
+                    #print(c.sum(axis=0))
+                    print(c.sum(axis=1))
                 disp=ConfusionMatrixDisplay(
                     confusion_matrix=c,
                     display_labels=kys(classes))
@@ -268,7 +273,7 @@ for ig in range(10**20):
                 y=moving_average(f,n)
                 plot(x,y,label=data_recorders[task].name)
             plt.title('loss')
-            plt.legend(kys(data_recorders),loc='upper left')
+            plt.legend(kys(data_recorders),loc='upper right')
             plt.savefig(
                 opj(save_path,get_safe_name('loss')+'.pdf'),
                 bbox_inches='tight')
