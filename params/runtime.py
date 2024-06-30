@@ -4,7 +4,7 @@
 from utilz2 import *
 import projutils
 
-_t=30
+_t=1*minute
 _n=100
 p=k2c(
     ti='p',
@@ -15,7 +15,7 @@ p=k2c(
     times=k2c(
         save=_t*10,
         show=_t,
-        epoch=95*minutes,
+        epoch=24*hours,
         max=999*hours,
     ),
     timer=k2c(ti='timer'),
