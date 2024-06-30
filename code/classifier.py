@@ -56,8 +56,6 @@ def show_sample_outputs(inputs,outputs,labels,ig,name,save_path):
 ##                                                                          ##
 
 
-for k in p.data_recorders:
-    p.data_recorders[k].dataloader=loader_dic[p.data_recorders[k].dataloader]
 
 
 if p.run_path:
@@ -81,6 +79,7 @@ else:
     optimizer = p.opt(net.parameters(),lr=p.lr,momentum=p.momentum)
 p.timer.show.trigger()
 p.timer.save.trigger()
+p.timer.epoch.trigger()
 best_loss=1e999
 printr_timer=Timer(1)
 
@@ -103,7 +102,10 @@ for ig in range(10**20):
     if p.timer.max.check():
         break
     if p.timer.epoch.rcheck():
-        break
+        cE('epoch')
+        for k in p.data_recorders:
+            p.data_recorders[k].dataloader=loader_dic[p.data_recorders[k].dataloader]
+
 
     if printr_timer.rcheck():
         l=[]
