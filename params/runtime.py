@@ -4,7 +4,7 @@
 from utilz2 import *
 import projutils
 
-_t=30#1*minute
+_t=1*minute
 _n=100
 p=k2c(
     ti='p',
