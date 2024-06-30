@@ -82,16 +82,20 @@ transforms_dict2=dict(
     ColorJitter_saturation=(0,2),
     ColorJitter_hue=(-.03,.03),
 )
+IMAGE_WIDTH=128
 geometric_transforms_list,color_transforms_list=get_transforms(
 	d=transforms_dict,
-	image_size=(32,32))
+	image_size=(IMAGE_WIDTH,IMAGE_WIDTH))
 
 train_transform = transforms.Compose([
 	transforms.ToTensor(),
+    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH)),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 	]+geometric_transforms_list)#+color_transforms_list)
 test_transform = transforms.Compose([
+    
 	transforms.ToTensor(),
+    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH)),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 	])
 

@@ -121,6 +121,7 @@ for ig in range(10**20):
         inputs,labels=next(p.data_recorders[task].dataiter)
     inputs=inputs.to(device)
 
+
     #
     ##########################################################################
     #
@@ -145,6 +146,8 @@ for ig in range(10**20):
     if 'test' not in p.data_recorders[task].name:
         loss.backward()
         optimizer.step()
+
+    #cE(inputs.size(),outputs.size(),targets.size())
     #
     ##########################################################################
     # 
