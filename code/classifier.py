@@ -244,8 +244,8 @@ for ig in range(10**20):
                             c.append(processed[i]['confusion_matrix'])
                         c=na(c)
                         c=c.sum(axis=0)
-                        c=(100*c.astype(
-                            'float')/c.sum(axis=1)[:,np.newaxis]).astype(int)
+                        c=np.round((100*c.astype(
+                            'float')/c.sum(axis=1)[:,np.newaxis])).astype(int)
 
                         disp=ConfusionMatrixDisplay(
                             confusion_matrix=c,
