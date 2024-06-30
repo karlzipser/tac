@@ -175,7 +175,7 @@ class GenDataset(Dataset):
 loader_dic=dict(
     trainloader=trainloader,
     testloader=testloader,
-    gen_trainloader=gen_trainloader,
+    #gen_trainloader=gen_trainloader,
     )
 
 
