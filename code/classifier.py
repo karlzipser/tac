@@ -98,7 +98,7 @@ print('*** Start Training . . .')
 
 
 for ig in range(10**20):
-    if True:#try:
+    try:
         if p.timer.max.check():
             break
         if p.timer.epoch.rcheck():
@@ -311,7 +311,7 @@ for ig in range(10**20):
                 plt.savefig(
                     opj(save_path,get_safe_name('loss')+'.pdf'),
                     bbox_inches='tight')
-    """
+    
     except KeyboardInterrupt:
         cr('*** KeyboardInterrupt ***')
         sys.exit()
@@ -319,9 +319,8 @@ for ig in range(10**20):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         CE('Exception!')
-        time_sleep(1)
         print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
-    """
+    
 
     #
     ##########################################################################
