@@ -58,7 +58,7 @@ _proj_dict=dict(
     hiMac='project_tac/29Jun24_23h15m55s',
     jane='',
     jake='',
-    gauss='project_tac/29Jun24_23h15m55s',
+    gauss='project_tac/29Jun24_23h55m52s',
 )
 assert host_name in _proj_dict
 p.run_path=_proj_dict[host_name]
