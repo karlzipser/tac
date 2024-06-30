@@ -166,7 +166,8 @@ class GenDataset(Dataset):
 
 #del inputs,labels
 gen_traindata = GenDataset(
-    root=opjD('data/gen0'), transform=train_transform)
+    root=p.gen_data_path,#pjD('data/gen0'),
+    transform=train_transform)
 gen_trainloader = DataLoader(
     gen_traindata, batch_size=16, shuffle=True)
 

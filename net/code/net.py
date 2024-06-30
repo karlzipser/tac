@@ -76,6 +76,7 @@ class Net_original(nn.Module):
         x = self.fc3(x)
         return x
 
+
 class Net32(nn.Module):
     def __init__(self):
         n=3
@@ -103,7 +104,7 @@ class Net32(nn.Module):
 
 
 
-class Net128(nn.Module):
+class Net128BN(nn.Module):
     def __init__(
         _,
         nin=3,
@@ -142,6 +143,41 @@ class Net128(nn.Module):
         #assert x.size()[-1]==128
         return _.main(x)
 
+
+class Net128(nn.Module):
+    def __init__(
+        _,
+        nin=3,
+        ndf=16,
+        nout=10,
+        inwidth=128,
+        ):
+        super(Net128, _).__init__()
+
+        _.main = nn.Sequential(                   
+            nn.Identity(),                                  dl('\nNet128 input',True),
+
+            nn.Upsample((inwidth,inwidth),mode='nearest'),  dl('\tUpsample input',True,'\n'), 
+                        
+            nn.Conv2d(nin, ndf//2, 4, 2, 1),                dl('\tConv2d output',True),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(ndf//2, ndf, 4, 2, 1,),               dl('\tConv2d output',True),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(ndf, ndf*2, 4, 2, 1,),              dl('\tConv2d output',True),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(ndf*2, ndf*4, 4, 2, 1,),         dl('\tConv2d output',True),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(ndf*4, ndf*8, 4, 2, 1,),        dl('\tConv2d output',True),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            nn.Conv2d(ndf*8, nout, 4, 1, 0),             dl('\tConv2d output',True),
+        )
+    def forward(_, x):
+        return _.main(x)
 
 Net=Net128
 
