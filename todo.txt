@@ -1,18 +1,13 @@
 
 To do now:
-	-create branch stable2 for each project
-		hiMac~ $ history|grep stable1
-		 3133  git checkout -b stable1
-		 3139  git commit -m 'stable1'
-		 3140  git push -u origin stable1
-	-save samples of train and test images
-	-develop code to summarize, view, comment on and delete runs
-	-put kllm into tac-style project
-	-get rf model into tac-style project
-	-generalize gathering of statistics over time (e.g., F1-scores)
-	-figure out way to batch run over different versions of a_local.py
 	
-	-save sample
+
+	-save samples for tac_ideal and tac_attn
+	-put kllm into tac-style project
+	-write notes.txt which contains continually updated information on run	
+
+	
+
 	
 Longer term:
 	projutils/summarize.py
@@ -46,3 +41,19 @@ Done:
 	*get saving of figures and outputs working on above projects, then run and save complete project html files
 	?write document explaining constraints and benefits of using projutils
 	√get loss working for test data
+
+	-create branch stable2 for each project
+		hiMac~ $ history|grep stable1
+		 3133  git checkout -b stable1
+		 3139  git commit -m 'stable1'
+		 3140  git push -u origin stable1
+
+
+	-save samples of train and test images
+	-develop code to summarize, view, comment on and delete runs
+	-get rf model into tac-style project
+	-generalize gathering of statistics over time (e.g., F1-scores)
+	-figure out way to batch run over different versions of a_local.py
+	-save sample
+	-axis labels on right side of plots
+	-class name on output images

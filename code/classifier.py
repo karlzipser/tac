@@ -59,7 +59,7 @@ def show_sample_outputs(inputs,outputs,labels,ig,name,save_path):
 
 
 if p.run_path:
-    print('\n*** Continuing from p.run_path=',p.run_path)
+    cg('\n*** Continuing from p.run_path=',p.run_path,r=1)
     for task in p.data_recorders:
         p.data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
         #cb('loaded',task,len(p.data_recorders[task].processed))
@@ -98,11 +98,11 @@ print('*** Start Training . . .')
 
 
 for ig in range(10**20):
-    try:
+    if True:#try:
         if p.timer.max.check():
             break
         if p.timer.epoch.rcheck():
-            cE('epoch')
+            print('\n*** epoch '+50*'*','\n')
             for k in p.data_recorders:
                 p.data_recorders[k].dataloader=loader_dic[p.data_recorders[k].dataloader]
 
@@ -179,7 +179,7 @@ for ig in range(10**20):
                     latest['outputs'],
                     latest['labels'],
                     ig,
-                    p.data_recorders[task].name+'_outputs',
+                    p.data_recorders[task].name+'_outputs '+kys(classes)[int(latest['labels'][0].item())],
                     save_path=opj(paths.figures),
                     )
                 sh(torchvision.utils.make_grid(latest['inputs']),
@@ -200,7 +200,7 @@ for ig in range(10**20):
                     n=max(1,len(processed)//100)
                     if not len(processed):
                         continue
-                    figure(1);clf()
+                    fig=figure(1);clf();ax=fig.add_subplot(111)
                     for c in classes:
                         f=[]
                         igs=[]
@@ -210,6 +210,11 @@ for ig in range(10**20):
                         x=moving_average(igs,n)
                         y=moving_average(f,n)
                         plot(x,y,label=classes[c])
+                    ax.yaxis.tick_right()
+                    ax.yaxis.set_label_position("right")
+                    ax.grid(which='major', linestyle=':', linewidth='0.5', color='black')
+                    ax.minorticks_on()
+                    ax.grid(which='minor', linestyle=':', linewidth='0.5', color='grey', alpha=0.7)
                     plt.title(p.data_recorders[task].name+' accuracy')
                     plt.legend(kys(classes),loc='upper left')
                     plt.savefig(
@@ -219,7 +224,7 @@ for ig in range(10**20):
                         bbox_inches='tight')
 
 
-                    figure(1);clf()
+                    fig=figure(1);clf();ax=fig.add_subplot(111)
                     for c in classes:
                         f=[]
                         igs=[]
@@ -229,6 +234,11 @@ for ig in range(10**20):
                         x=moving_average(igs,n)
                         y=moving_average(f,n)
                         plot(x,y,label=classes[c])
+                    ax.yaxis.tick_right()
+                    ax.yaxis.set_label_position("right")
+                    ax.grid(which='major', linestyle=':', linewidth='0.5', color='black')
+                    ax.minorticks_on()
+                    ax.grid(which='minor', linestyle=':', linewidth='0.5', color='grey', alpha=0.7)
                     plt.title(p.data_recorders[task].name+' f1-scores')
                     plt.legend(kys(classes),loc='upper left')
                     plt.savefig(
@@ -274,8 +284,7 @@ for ig in range(10**20):
 
 
 
-                figure(1)
-                clf()
+                fig=figure(1);clf();ax=fig.add_subplot(111)
                 for task in p.data_recorders:
                     processed=p.data_recorders[task].processed
                     f=[]
@@ -286,21 +295,33 @@ for ig in range(10**20):
                     x=moving_average(igs,n)
                     y=moving_average(f,n)
                     plot(x,y,label=p.data_recorders[task].name)
+
+                ax.yaxis.tick_right()
+                ax.yaxis.set_label_position("right")
+                ax.grid(which='major', linestyle=':', linewidth='0.5', color='black')
+                ax.minorticks_on()
+                ax.grid(which='minor', linestyle=':', linewidth='0.5', color='grey', alpha=0.7)
+
+
+                #ax.yaxis.grid(True, which='both', linestyle=':', linewidth='0.5', color='black')
+                #ax.xaxis.grid(False)
+
                 plt.title('loss')
                 plt.legend(kys(p.data_recorders),loc='upper right')
                 plt.savefig(
                     opj(save_path,get_safe_name('loss')+'.pdf'),
                     bbox_inches='tight')
-    
+    """
     except KeyboardInterrupt:
         cr('*** KeyboardInterrupt ***')
         sys.exit()
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print('Exception!')
+        CE('Exception!')
+        time_sleep(1)
         print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
-    
+    """
 
     #
     ##########################################################################

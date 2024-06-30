@@ -164,19 +164,19 @@ class GenDataset(Dataset):
             image = self.transform(image)
         return image,classes[self.labels[index]]
 
-#del inputs,labels
-#gen_traindata = GenDataset(
-#    root=p.gen_data_path,#pjD('data/gen0'),
-#    transform=train_transform)
-#gen_trainloader = DataLoader(
-#    gen_traindata, batch_size=16, shuffle=True)
 
 
 loader_dic=dict(
     trainloader=trainloader,
     testloader=testloader,
-    #gen_trainloader=gen_trainloader,
     )
+if 'gen_trainloader' in p.task_list:
+    gen_traindata = GenDataset(
+        root=p.gen_data_path,
+        transform=train_transform)
+    gen_trainloader = DataLoader(
+        gen_traindata, batch_size=16, shuffle=True)
+    loader_dic['gen_trainloader']=gen_trainloader
 
 
 
