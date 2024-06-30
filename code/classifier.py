@@ -318,7 +318,7 @@ for ig in range(10**20):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file_name = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        CE('Exception!')
+        cE('Exception!')
         print(d2s(exc_type,file_name,exc_tb.tb_lineno)) 
     
 
