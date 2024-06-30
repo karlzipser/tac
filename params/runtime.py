@@ -4,7 +4,7 @@ from utilz2 import *
 import projutils
 
 _t=30
-_n=50
+_n=500
 p=k2c(
     ti='p',
     batch_size=16,
