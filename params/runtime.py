@@ -1,10 +1,10 @@
-### ulimit -n 4096
+### ulimit -n 8192
 
 from utilz2 import *
 import projutils
 
 _t=30
-_n=500
+_n=50
 p=k2c(
     ti='p',
     batch_size=16,
@@ -23,7 +23,7 @@ p=k2c(
     criterion=nn.MSELoss(),
     opt=optim.Adam,lr=0.0001,momentum=None,
     gen_data_path=opjD('data/gen0'),
-    task_list=5*['train']+1*['test']+1*['train_no_noise'],
+    task_list=5*['train']+1*['test']+5*['gen_trainloader'],
 
     data_recorders=dict(
         train=projutils.net_data_recorder.Data_Recorder(
@@ -33,11 +33,12 @@ p=k2c(
             noise_p=1.,
             n=_n,
             ),
-        train_no_noise=projutils.net_data_recorder.Data_Recorder(
-            dataloader='trainloader_test_transform',
-            name='train_no_noise',
+        gen_trainloader=projutils.net_data_recorder.Data_Recorder(
+            dataloader='gen_trainloader',
+            name='gen_trainloader',
             noise_level=0.,
             noise_p=0.,
+            targets_to_zero=True,
             n=_n,
             ),
         test=projutils.net_data_recorder.Data_Recorder(

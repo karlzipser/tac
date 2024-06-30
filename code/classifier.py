@@ -137,8 +137,9 @@ for ig in range(10**20):
     
     outputs = net(inputs)
     targets=0*outputs.detach()
-    for i in range(targets.size()[0]):
-        targets[i,labels[i],0,0]=1
+    if not p.data_recorders[task].targets_to_zero:
+        for i in range(targets.size()[0]):
+            targets[i,labels[i],0,0]=1
     
     loss = p.criterion(torch.flatten(outputs,1),torch.flatten(targets,1))
     if 'test' not in p.data_recorders[task].name:
