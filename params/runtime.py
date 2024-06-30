@@ -1,10 +1,11 @@
 ### ulimit -n 8192
-
+##############################################################################
+##
 from utilz2 import *
 import projutils
 
 _t=30
-_n=50
+_n=100
 p=k2c(
     ti='p',
     batch_size=16,
@@ -36,8 +37,8 @@ p=k2c(
         gen_trainloader=projutils.net_data_recorder.Data_Recorder(
             dataloader='gen_trainloader',
             name='gen_trainloader',
-            noise_level=0.,
-            noise_p=0.,
+            noise_level=1.,
+            noise_p=1.,
             targets_to_zero=True,
             n=_n,
             ),
@@ -56,10 +57,13 @@ for k in p.times.__dict__:
 _proj_dict=dict(
     hiMac='project_tac/29Jun24_16h02m05s',
     jane='',
-    jack='',
+    jake='project_tac/29Jun24_19h27m41s',
     gauss='',
 )
 assert host_name in _proj_dict
 p.run_path=_proj_dict[host_name]
 
+##
+##############################################################################
+##
 #EOF
