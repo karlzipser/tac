@@ -108,7 +108,7 @@ net.eval()
 h=[]
 for ig in range(10**20):
     
-    if True:#try:
+    try:
             
         printr(d2n(thispath.replace(opjh(),''),': ig=',ig,', t=',int(p.timer.max.time())))
 
@@ -296,8 +296,8 @@ for ig in range(10**20):
                 opj(save_path,get_safe_name('loss')+'.pdf'),
                 bbox_inches='tight')
 
-    try:
-        pass
+    #try:
+    #    pass
     except KeyboardInterrupt:
         cr('*** KeyboardInterrupt ***')
         sys.exit()
