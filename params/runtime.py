@@ -62,7 +62,7 @@ p=k2c(
         max=999*hours,
     ),
     timer=k2c(ti='timer'),
-    max_num_samples=20,
+    max_num_samples=50,
     #criterion=nn.CrossEntropyLoss()
     #opt=optim.SGD,lr=0.001,momentum=0.9,
     criterion=nn.MSELoss(),
@@ -70,7 +70,7 @@ p=k2c(
     gen_data_path=opjD('data/rf_gen128_0'),
     task_list=5*['train']+1*['test']+5*['gen_trainloader'],
     #task_list=5*['train']+1*['test'],
-    run_path=select_from_list(sggo(opjh('project_tac/*'))),#get_second_most_recent_file(opjh('project_tac')),
+    run_path=select_from_list(sggo(opjh('project_tac/*'))),#+['NONE']),#get_second_most_recent_file(opjh('project_tac')),
     #'project_tac/30Jun24_18h33m11s',#most_recent_file_in_folder(opjh('project_tac')),
     data_recorders=dict(
         train=projutils.net_data_recorder.Data_Recorder(
