@@ -175,7 +175,7 @@ if 'gen_trainloader' in p.task_list:
         root=p.gen_data_path,
         transform=train_transform)
     gen_trainloader = DataLoader(
-        gen_traindata, batch_size=16, shuffle=True)
+        gen_traindata, batch_size=p.batch_size, shuffle=True)
     loader_dic['gen_trainloader']=gen_trainloader
 
 
