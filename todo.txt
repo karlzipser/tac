@@ -1,19 +1,13 @@
 
 To do now:
-	
-
-	-save samples for tac_ideal and tac_attn
-	-put kllm into tac-style project
 	-write notes.txt which contains continually updated information on run	
-
-	
-udate dataloader
-√ batch size 1
-√ load most recent (actually this has to be the second most recent)
-max num samples
-test generated images
+	-udate dataloader
+	-test generated images
+	-save progress notes
 	
 Longer term:
+	-save samples for tac_ideal and tac_attn
+	-put kllm into tac-style project
 	projutils/summarize.py
 		summarize runs for a project
 			rating
@@ -61,3 +55,6 @@ Done:
 	-save sample
 	-axis labels on right side of plots
 	-class name on output images
+	√ batch size 1
+	√ load most recent (actually this has to be the second most recent)
+	√ max num samples
