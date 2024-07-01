@@ -127,8 +127,8 @@ for ig in range(10**20):
         loss = p.criterion(torch.flatten(outputs,1),torch.flatten(targets,1))
 
         #print(outputs.size(),labels.size())
-        a=outputs[0,labels.item(),0,0]
-        b=outputs.sum().item()
+        a=outputs[0,labels.item(),0,0].cpu().numpy()
+        b=outputs.sum().item().cpu().numpy()
         c=a/b
         if np.isnan(c):
             c=0
