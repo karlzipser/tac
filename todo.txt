@@ -7,7 +7,11 @@ To do now:
 	-write notes.txt which contains continually updated information on run	
 
 	
-
+udate dataloader
+batch size 1
+load most recent
+max num samples
+test generated images
 	
 Longer term:
 	projutils/summarize.py

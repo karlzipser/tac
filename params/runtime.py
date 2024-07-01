@@ -8,7 +8,7 @@ _t=1*minute
 _n=100
 p=k2c(
     ti='p',
-    batch_size=16,
+    batch_size=1,
     num_workers=8,
     num_epochs=100000,
     device='cuda:0',
@@ -47,7 +47,7 @@ p=k2c(
 )
 
 
-    
+
 if 'gen_trainloader' in p.task_list:
     p.data_recorders[
         'gen_trainloader']=projutils.net_data_recorder.Data_Recorder(
