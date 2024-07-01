@@ -8,8 +8,8 @@ To do now:
 
 	
 udate dataloader
-batch size 1
-load most recent
+√ batch size 1
+√ load most recent (actually this has to be the second most recent)
 max num samples
 test generated images
 	

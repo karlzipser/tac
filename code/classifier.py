@@ -193,7 +193,8 @@ for ig in range(10**20):
             save_path=opj(paths.figures)
 
             if True:#try:
-
+                reduce_file_numbers(save_path,p.max_num_samples)
+                
                 for task in p.data_recorders:
 
                     processed=p.data_recorders[task].processed
