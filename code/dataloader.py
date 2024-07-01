@@ -6,6 +6,7 @@ import torchvision.transforms as transforms
 from ..params.runtime import *
 from projutils.data_augmentation import get_transforms
 from torch.utils.data import DataLoader, Dataset
+torchvision.disable_beta_transforms_warning()
 
 classes = dict(
     plane=0,
@@ -52,50 +53,21 @@ transforms_dict=dict(
     ColorJitter_saturation=(0,2),
     ColorJitter_hue=(-.03,.03),
 )
-transforms_dict2=dict(
-    RandomPerspective=True,
-    RandomPerspective_distortion_scale=0.5,
-    RandomPerspective_p=0.5,
-    RandomPerspective_fill=_fill,
 
-    RandomRotation=True,
-    RandomRotation_angle=16,
-    RandomRotation_fill=_fill,
-
-    RandomResizedCrop=True,
-    RandomResizedCrop_scale=(0.75,1),
-    RandomResizedCrop_ratio=(0.75,1.2),
-
-    RandomHorizontalFlip=True,
-    RandomHorizontalFlip_p=0.5,
-        
-    RandomVerticalFlip=False,
-    RandomVerticalFlip_p=0.5,
-
-    RandomZoomOut=True,
-    RandomZoomOut_fill=_fill,
-    RandomZoomOut_side_range=(1.0,1.5),
-
-    ColorJitter=False,
-    ColorJitter_brightness=(0,1),
-    ColorJitter_contrast=(0,1),
-    ColorJitter_saturation=(0,2),
-    ColorJitter_hue=(-.03,.03),
-)
-IMAGE_WIDTH=128
+IMAGE_WIDTH=p.image_width
 geometric_transforms_list,color_transforms_list=get_transforms(
 	d=transforms_dict,
 	image_size=(IMAGE_WIDTH,IMAGE_WIDTH))
 
 train_transform = transforms.Compose([
 	transforms.ToTensor(),
-    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH)),
+    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH),antialias=True),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 	]+geometric_transforms_list)#+color_transforms_list)
 test_transform = transforms.Compose([
     
 	transforms.ToTensor(),
-    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH)),
+    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH),antialias=True),
 	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 	])
 
@@ -140,7 +112,7 @@ trainloader_test_transform = torch.utils.data.DataLoader(
 
 class GenDataset(Dataset):
     def __init__(self, root, transform=None):
-        cy('GenDataset __init__()')
+        print('\n*** GenDataset __init__()')
         self.root = root
         self.transform = transform
         self.images = []
@@ -153,7 +125,7 @@ class GenDataset(Dataset):
                 self.images.append(image)
                 self.labels.append(fname(cf))
                 #print(self.images[-1],self.labels[-1])
-        cE('len(self.images)=',
+        print('\tlen(self.images)=',
             len(self.images),'len(self.labels)=',len(self.labels))
     def __len__(self):
         return len(self.images)

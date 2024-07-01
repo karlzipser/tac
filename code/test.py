@@ -28,6 +28,36 @@ mkdirp(paths.weights)
 mkdirp(paths.stats)
 paths.weights_latest=opj(paths.weights,'latest.pth')
 paths.weights_best=  opj(paths.weights,'best.pth')
+
+
+class GenDataset2(Dataset):
+    def __init__(self, root, transform=None):
+        print('\n*** GenDataset __init__()')
+        self.root = root
+        self.transform = transform
+        self.images = []
+        self.labels = []
+        fs0=sggo(root,'*')
+        for cf in fs0:
+            if not os.path.isdir(cf):
+                continue
+            for image in sggo(cf,'*.png'):
+                self.images.append(image)
+                self.labels.append(fname(cf))
+                #print(self.images[-1],self.labels[-1])
+        print('\tlen(self.images)=',
+            len(self.images),'len(self.labels)=',len(self.labels))
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, index):
+        image = rimread(self.images[index])
+        if self.transform:
+            image = self.transform(image)
+        return image,classes[self.labels[index]],self.images[index]
+
+
+
 ##                                                                          ##
 ##############################################################################
 ##                                                                          ##
@@ -62,69 +92,62 @@ printr_timer=Timer(1)
 ##                                                                          ##
 ##############################################################################
 ##                                                                          ##
-print('*** Start Training . . .')
+print('*** Start Testing gen data. . .')
 
+task='gen_trainloader'
+p.data_recorders[task].dataloader=DataLoader(
+    GenDataset2(
+        root=p.gen_data_path,
+        transform=test_transform),
+    batch_size=p.batch_size,
+    shuffle=False)
+p.data_recorders[task].dataiter=iter(p.data_recorders[task].dataloader)
+assert p.batch_size==1
+
+net.eval()
+h=[]
 for ig in range(10**20):
+    
     if True:#try:
-        if p.timer.max.check():
-            break
-        if p.timer.epoch.rcheck():
-            cE('\n*** epoch '+50*'*','\n')
-            for k in p.data_recorders:
-                if k=='gen_trainloader':
-                    p.data_recorders[k].dataloader=DataLoader(
-                        GenDataset(
-                            root=p.gen_data_path,
-                            transform=train_transform),
-                        batch_size=p.batch_size,
-                        shuffle=True)
-                else:
-                    if type(p.data_recorders[k].dataloader)==str:
-                        cg('adding dataloader for',k)
-                        p.data_recorders[k].dataloader=loader_dic[p.data_recorders[k].dataloader]
             
+        printr(d2n(thispath.replace(opjh(),''),': ig=',ig,', t=',int(p.timer.max.time())))
 
+        inputs,labels,files=next(p.data_recorders[task].dataiter)
 
-
-        if printr_timer.rcheck():
-            l=[]
-            for task in p.data_recorders:
-                l.append(len(p.data_recorders[task].processed))
-            l=tuple(l)
-            printr(d2n(thispath.replace(opjh(),''),': ig=',ig,', t=',int(p.timer.max.time()),'s processed=',l))
-
-        task=np.random.choice(p.task_list)
-
-        try:
-            inputs,labels=next(p.data_recorders[task].dataiter)
-        except:
-            p.data_recorders[task].dataiter=iter(p.data_recorders[task].dataloader)
-            inputs,labels=next(p.data_recorders[task].dataiter)
         inputs=inputs.to(device)
         #
         ##########################################################################
         #
-        if p.data_recorders[task].noise_level and rnd()<p.data_recorders[task].noise_p:
-            inputs+=rnd()*p.data_recorders[task].noise_level*torch.randn(
-                inputs.size()).to(device)
-
-        if 'test' not in p.data_recorders[task].name:
-            assert 'train' in p.data_recorders[task].name
-            net.train()
-            optimizer.zero_grad()
-        else:
-            net.eval()
-        
         outputs = net(inputs)
+        outputs=outputs.detach()
+        outputs[outputs<0]=0
         targets=0*outputs.detach()
-        if not p.data_recorders[task].targets_to_zero:
-            for i in range(targets.size()[0]):
-                targets[i,labels[i],0,0]=1
-        
+        for i in range(targets.size()[0]):
+            targets[i,labels[i],0,0]=1
         loss = p.criterion(torch.flatten(outputs,1),torch.flatten(targets,1))
-        if 'test' not in p.data_recorders[task].name:
-            loss.backward()
-            optimizer.step()
+
+        #print(outputs.size(),labels.size())
+        a=outputs[0,labels.item(),0,0]
+        b=outputs.sum().item()
+        c=a/b
+        if np.isnan(c):
+            c=0
+        h.append(c)
+        #hist(h)
+        if c>=0.5:
+            figure(1)
+            projutils.show_sample_outputs(
+                inputs,
+                outputs,
+                labels,
+                ig,
+                d2s(int(100*c),len(h)),
+                '',
+                )
+            spause()
+
+
+        continue
         #
         ##########################################################################
         # 

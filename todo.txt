@@ -4,6 +4,8 @@ To do now:
 	-udate dataloader
 	-test generated images
 	-save progress notes
+	-make sure I can run in 32x32 and 128x128, maybe 64x64 too
+	-make gan discriminator
 	
 Longer term:
 	-save samples for tac_ideal and tac_attn
