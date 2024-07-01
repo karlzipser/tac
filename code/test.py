@@ -106,6 +106,7 @@ assert p.batch_size==1
 
 net.eval()
 h=[]
+timer=Timer(4)
 for ig in range(10**20):
     
     try:
@@ -133,8 +134,10 @@ for ig in range(10**20):
         if np.isnan(c):
             c=0
         h.append(c)
-        #hist(h)
-        if c>=0.5:
+        if timer.rcheck():
+            hist(h)
+            spause()
+        if False:c>=0.5:
             figure(1)
             projutils.show_sample_outputs(
                 inputs,
