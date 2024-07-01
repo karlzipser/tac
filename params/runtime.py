@@ -26,7 +26,7 @@ p=k2c(
     gen_data_path=opjD('data/rf_gen128_0'),
     task_list=5*['train']+1*['test']+5*['gen_trainloader'],
     #task_list=5*['train']+1*['test'],
-
+    run_path=most_recent_file_in_folder(opjh('project_tac')),
     data_recorders=dict(
         train=projutils.net_data_recorder.Data_Recorder(
             dataloader='trainloader',
@@ -64,6 +64,7 @@ if 'gen_trainloader' in p.task_list:
 
 for k in p.times.__dict__:
     p.timer.__dict__[k]=Timer(p.times.__dict__[k])
+"""
 _proj_dict=dict(
     hiMac='project_tac/30Jun24_11h15m55s',
     jane='',
@@ -72,7 +73,7 @@ _proj_dict=dict(
 )
 assert host_name in _proj_dict
 p.run_path=_proj_dict[host_name]
-
+"""
 ##
 ##############################################################################
 ##

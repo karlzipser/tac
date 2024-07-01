@@ -59,7 +59,7 @@ def show_sample_outputs(inputs,outputs,labels,ig,name,save_path):
 
 
 if p.run_path:
-    cg('\n*** Continuing from p.run_path=',p.run_path,r=1)
+    cy('\n*** Continuing from p.run_path=',p.run_path,r=1)
     for task in p.data_recorders:
         p.data_recorders[task].load(opjh(p.run_path,fname(thispath),'stats'))
         #cb('loaded',task,len(p.data_recorders[task].processed))
