@@ -137,7 +137,7 @@ for ig in range(10**20):
         if timer.rcheck():
             hist(h)
             spause()
-        if False:c>=0.5:
+        if False:#c>=0.5:
             figure(1)
             projutils.show_sample_outputs(
                 inputs,
