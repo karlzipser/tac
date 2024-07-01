@@ -54,7 +54,7 @@ if 'gen_trainloader' in p.task_list:
             dataloader='gen_trainloader',
             name='gen_trainloader',
             noise_level=1.,
-            noise_p=1.,
+            noise_p=.75,
             targets_to_zero=True,
             n=_n,
             )
