@@ -128,7 +128,7 @@ for ig in range(10**20):
 
         #print(outputs.size(),labels.size())
         a=outputs[0,labels.item(),0,0].cpu().numpy()
-        b=outputs.sum().item().cpu().numpy()
+        b=outputs.sum().item()
         c=a/b
         if np.isnan(c):
             c=0
