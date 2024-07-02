@@ -134,7 +134,7 @@ class RFDataset(Dataset):
 
 
 
-fs=find_files(opjD('data/RF/spectrograms'),['*.npy'])
+fs=find_files(opjD('data/RF/2024-02-06/spectrograms'),['*.npy'])
 d=filter_files_for_experiment(fs,experiments['phenomena'])
 npy_file_list,label_list=d_to_lists(d)
 n=int(0.8*len(npy_file_list))
