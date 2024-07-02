@@ -23,10 +23,10 @@ experiments=dict(
                 yes=['PB'],
                 no=['dynamic','AJ'],
                 ),
-            #other=dict(
-            #    yes=[],
-            #    no=['dynamic','AJ','PB'],
-            #),
+            other=dict(
+                yes=[],
+                no=['dynamic','AJ','PB'],
+            ),
         ),
     conditions=dict(
             DUG=dict(
@@ -94,6 +94,7 @@ class RFDataset(Dataset):
         self.npy_file_list=npy_file_list
         self.label_list=label_list
         self.to3=to3
+        print('RFDataset',len(self.npy_file_list),self.label_list)
         if False:
             fs0=sggo(root,'*')
             for cf in fs0:
@@ -134,11 +135,16 @@ class RFDataset(Dataset):
 
 
 
-fs=find_files(opjD('data/RF/spectrograms3'),['*.npy'])
-np.random.shuffle(fs)
-d=filter_files_for_experiment(fs,experiments['phenomena'])
-npy_file_list,label_list=d_to_lists(d)
-n=int(0.7*len(npy_file_list))
+fs=find_files(opjD('data/RF/spectrograms4'),['*.npy'])
+d=filter_files_for_experiment(fs,experiments['phenomena'])#'conditions'])#
+a,b=d_to_lists(d)
+c=list(rlen(a))
+np.random.shuffle(c)
+npy_file_list,label_list=[],[]
+for i in c:
+    npy_file_list.append(a[i])
+    label_list.append(b[i])
+n=int(0.8*len(npy_file_list))
 
 
 trainloader=DataLoader(
@@ -161,11 +167,22 @@ loader_dic=dict(
     testloader=testloader,
     )
 
+
+
+
+classes=dict(
+    DUG=0,
+    DUF=1,
+    OQ=2,
+    OUG=3,
+    OUF=4)
 classes = dict(
     AJ=0,
     PB=1,
-    #other=2,
+    other=2,
     )
+
+
 if __name__ == '__main__':
     it=iter(testloader)
     ctr=0

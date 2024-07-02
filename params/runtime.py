@@ -35,7 +35,7 @@ p=k2c(
             dataloader='trainloader',
             name='train',
             noise_level=1.,
-            noise_p=0.,
+            noise_p=1.,
             n=_n,
             ),
         test=projutils.net_data_recorder.Data_Recorder(
