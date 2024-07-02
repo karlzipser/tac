@@ -149,7 +149,7 @@ class Net128(nn.Module):
         _,
         nin=3,
         ndf=16,
-        nout=3,
+        nout=2,
         inwidth=128,
         ):
         super(Net128, _).__init__()

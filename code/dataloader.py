@@ -11,8 +11,8 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Dataset
-
-
+from ..params.runtime import *
+#p=k2c(batch_size=3)
 experiments=dict(
     phenomena=dict(
             AJ=dict(
@@ -23,10 +23,10 @@ experiments=dict(
                 yes=['PB'],
                 no=['dynamic','AJ'],
                 ),
-            other=dict(
-                yes=[],
-                no=['dynamic','AJ','PB'],
-            ),
+            #other=dict(
+            #    yes=[],
+            #    no=['dynamic','AJ','PB'],
+            #),
         ),
     conditions=dict(
             DUG=dict(
@@ -134,24 +134,25 @@ class RFDataset(Dataset):
 
 
 
-fs=find_files(opjD('data/RF/2024-02-06/spectrograms'),['*.npy'])
+fs=find_files(opjD('data/RF/spectrograms3'),['*.npy'])
+np.random.shuffle(fs)
 d=filter_files_for_experiment(fs,experiments['phenomena'])
 npy_file_list,label_list=d_to_lists(d)
-n=int(0.8*len(npy_file_list))
-batch_size=1
+n=int(0.7*len(npy_file_list))
+
 
 trainloader=DataLoader(
     RFDataset(
         npy_file_list[:n], label_list[:n],
         ),
-    batch_size=batch_size,
+    batch_size=p.batch_size,
     shuffle=True)
 
 testloader=DataLoader(
     RFDataset(
         npy_file_list[n:], label_list[n:],
         ),
-    batch_size=batch_size,
+    batch_size=p.batch_size,
     shuffle=True)
 
 
@@ -163,15 +164,15 @@ loader_dic=dict(
 classes = dict(
     AJ=0,
     PB=1,
-    other=2,
+    #other=2,
     )
 if __name__ == '__main__':
     it=iter(testloader)
     ctr=0
     while True:
         try:
-            inputs,labels,files=next(it)
-            print(inputs.size(),labels,files)
+            inputs,labels=next(it)
+            print(inputs.size(),labels)
             q=1*inputs
             q[0,0,0,0]=-1;q[0,0,0,1]=1
             sh(q[0,:],1,r=0)
@@ -183,3 +184,6 @@ if __name__ == '__main__':
 ##                                                                          ##
 ##############################################################################
 ##                                                                       ##
+it=iter(trainloader);inputs,labels=next(it);print(labels)
+
+
