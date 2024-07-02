@@ -9,7 +9,7 @@ _n=100
 
 p=k2c(
     ti='p',
-    batch_size=1,
+    batch_size=16,
     num_workers=8,
     num_epochs=100000,
     device='cuda:0',
@@ -22,20 +22,20 @@ p=k2c(
     ),
     timer=k2c(ti='timer'),
     max_num_samples=50,
-    ##criterion=nn.CrossEntropyLoss()
-    ##opt=optim.SGD,lr=0.001,momentum=0.9,
+    ##__criterion=nn.CrossEntropyLoss(),
+    ##__opt=optim.SGD,lr=0.001,momentum=0.9,
     criterion=nn.MSELoss(),
     opt=optim.Adam,lr=0.0001,momentum=None,
     gen_data_path=opjD('data/rf_gen128_0'),
-    task_list=5*['train']+1*['test']+5*['gen_trainloader'],
-    ##task_list=5*['train']+1*['test'],
+    ##__task_list=5*['train']+1*['test']+5*['gen_trainloader'],
+    task_list=5*['train']+1*['test'],
     run_path=select_from_list(sggo(opjh('project_tac/*'))),
     data_recorders=dict(
         train=projutils.net_data_recorder.Data_Recorder(
             dataloader='trainloader',
             name='train',
             noise_level=1.,
-            noise_p=1.,
+            noise_p=0.,
             n=_n,
             ),
         test=projutils.net_data_recorder.Data_Recorder(

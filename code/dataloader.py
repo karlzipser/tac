@@ -1,159 +1,185 @@
-## 79 ########################################################################
+## 79                                                                       ##
+##############################################################################
+## 
+#
 
+##                                                                          ##
+##############################################################################
+##   
+from utilz2 import *                                                        
 import torch
 import torchvision
 import torchvision.transforms as transforms
-from ..params.runtime import *
-from projutils.data_augmentation import get_transforms
 from torch.utils.data import DataLoader, Dataset
-torchvision.disable_beta_transforms_warning()
 
-classes = dict(
-    plane=0,
-    car=1,
-    bird=2,
-    cat=3,
-    deer=4,
-    dog=5,
-    frog=6,
-    horse=7,
-    ship=8,
-    truck=9,
-    )
-    
-_fill=(0,0,0)
 
-transforms_dict=dict(
-    RandomPerspective=True,
-    RandomPerspective_distortion_scale=0.3,
-    RandomPerspective_p=0.3,
-    RandomPerspective_fill=_fill,
-
-    RandomRotation=True,
-    RandomRotation_angle=12,
-    RandomRotation_fill=_fill,
-
-    RandomResizedCrop=True,
-    RandomResizedCrop_scale=(0.85,1),
-    RandomResizedCrop_ratio=(0.85,1.2),
-
-    RandomHorizontalFlip=True,
-    RandomHorizontalFlip_p=0.5,
-        
-    RandomVerticalFlip=False,
-    RandomVerticalFlip_p=0.5,
-
-    RandomZoomOut=True,
-    RandomZoomOut_fill=_fill,
-    RandomZoomOut_side_range=(1.0,1.5),
-
-    ColorJitter=False,
-    ColorJitter_brightness=(0,1),
-    ColorJitter_contrast=(0,1),
-    ColorJitter_saturation=(0,2),
-    ColorJitter_hue=(-.03,.03),
-)
-
-IMAGE_WIDTH=p.image_width
-geometric_transforms_list,color_transforms_list=get_transforms(
-	d=transforms_dict,
-	image_size=(IMAGE_WIDTH,IMAGE_WIDTH))
-
-train_transform = transforms.Compose([
-	transforms.ToTensor(),
-    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH),antialias=True),
-	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-	]+geometric_transforms_list)#+color_transforms_list)
-test_transform = transforms.Compose([
-    
-	transforms.ToTensor(),
-    transforms.Resize((IMAGE_WIDTH,IMAGE_WIDTH),antialias=True),
-	transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-	])
-
-trainset = torchvision.datasets.CIFAR10(
-    root='./data',
-    train=True,
-    download=True,
-    transform=train_transform,
-    )
-trainloader = torch.utils.data.DataLoader(
-    trainset,
-    batch_size=p.batch_size,
-    shuffle=True,
-    num_workers=p.num_workers,
-    )
-testset = torchvision.datasets.CIFAR10(
-    root='./data',
-    train=False,
-    download=True,
-    transform=test_transform
-    )
-testloader = torch.utils.data.DataLoader(
-    testset,
-    batch_size=p.batch_size,
-    shuffle=True,
-    num_workers=p.num_workers,
+experiments=dict(
+    phenomena=dict(
+            AJ=dict(
+                yes=['AJ'],
+                no=['dynamic','PB'],
+                ),
+            PB=dict(
+                yes=['PB'],
+                no=['dynamic','AJ'],
+                ),
+            other=dict(
+                yes=[],
+                no=['dynamic','AJ','PB'],
+            ),
+        ),
+    conditions=dict(
+            DUG=dict(
+                yes=['Dense','Urban','Ground'],
+                no=['dynamic'],
+                ),
+            DUF=dict(
+                yes=['Dense','Urban','Flight'],
+                no=['dynamic'],
+                ),
+            OQ=dict(
+                yes=['Open','Quiet'],
+                no=['dynamic'],
+                ),
+            OUG=dict(
+                yes=['Open','Urban','Ground'],
+                no=['dynamic'],
+                ),
+            OUF=dict(
+                yes=['Open','Urban','Flight'],
+                no=['dynamic'],
+                ),
+        ),
     )
 
-trainset_test_transform = torchvision.datasets.CIFAR10(
-    root='./data',
-    train=True,
-    download=True,
-    transform=test_transform,
-    )
-trainloader_test_transform = torch.utils.data.DataLoader(
-    trainset_test_transform,
-    batch_size=p.batch_size,
-    shuffle=True,
-    num_workers=p.num_workers,
-    )
+def file_matches(f,yesno):
+    for q in yesno['yes']:
+        if q not in f:
+            return False
+    for q in yesno['no']:
+        if q in f:
+            return False
+    return True 
 
-
-class GenDataset(Dataset):
-    def __init__(self, root, transform=None):
-        print('\n*** GenDataset __init__()')
-        self.root = root
-        self.transform = transform
-        self.images = []
-        self.labels = []
-        fs0=sggo(root,'*')
-        for cf in fs0:
-            if not os.path.isdir(cf):
+def filter_files_for_experiment(fs,experiment):
+    d={}
+    for f in fs:
+        for k in experiment:
+            yesno=experiment[k]
+            if file_matches(f,yesno):
+                if k not in d:
+                    d[k]=[]
+                d[k].append(f)
                 continue
-            for image in sggo(cf,'*.png'):
-                self.images.append(image)
-                self.labels.append(fname(cf))
-                #print(self.images[-1],self.labels[-1])
-        print('\tlen(self.images)=',
-            len(self.images),'len(self.labels)=',len(self.labels))
+    return d
+
+def d_to_lists(d):
+    npy_file_list=[]
+    label_list=[]
+    ctr=0
+    for k in d:
+        for f in d[k]:
+            npy_file_list.append(f)
+            label_list.append(ctr)
+        ctr+=1
+    return npy_file_list,label_list
+
+
+
+class RFDataset(Dataset):
+    def __init__(self, npy_file_list, label_list, transform=transforms.ToTensor(),to3=True):
+        print('\n*** RFDataset __init__()')
+        assert len(npy_file_list)==len(label_list)
+        self.transform=transform
+        self.npy_file_list=npy_file_list
+        self.label_list=label_list
+        self.to3=to3
+        if False:
+            fs0=sggo(root,'*')
+            for cf in fs0:
+                if not os.path.isdir(cf):
+                    continue
+                for image in sggo(cf,'*.npy'):
+                    self.images.append(image)
+                    self.labels.append(fname(cf))
+            print('\tlen(self.images)=',
+                len(self.images),'len(self.labels)=',len(self.labels))
+
     def __len__(self):
-        return len(self.images)
+        return len(self.npy_file_list)
 
     def __getitem__(self, index):
-        image = rimread(self.images[index])
-        if self.transform:
-            image = self.transform(image)
-        return image,classes[self.labels[index]]
+        a,b=-2,8
+        image = np.load(self.npy_file_list[index])
+        m=np.concatenate((image[:16,:],image[-16:,:]))
+        image-=m.mean()
+        image/=m.std()
+        image[image<a]=a
+        image[image>b]=b
+        image-=a
+        image/=(b-a)
+        image-=0.5
+        image*=2.
+        image[image<-1]=-1
+        image[image>1]=1
+        offset=randint(0,512-128)
+        image=image[:,offset:offset+128]
+        if self.to3:
+            g=zeros((128,128,3))
+            for i in range(3):
+                g[:,:,i]=image
+            image=g
+        image=self.transform(image).float()
+        return image,self.label_list[index]#,self.npy_file_list[index]
 
+
+
+fs=find_files(opjD('data/RF/spectrograms'),['*.npy'])
+d=filter_files_for_experiment(fs,experiments['phenomena'])
+npy_file_list,label_list=d_to_lists(d)
+n=int(0.8*len(npy_file_list))
+batch_size=1
+
+trainloader=DataLoader(
+    RFDataset(
+        npy_file_list[:n], label_list[:n],
+        ),
+    batch_size=batch_size,
+    shuffle=True)
+
+testloader=DataLoader(
+    RFDataset(
+        npy_file_list[n:], label_list[n:],
+        ),
+    batch_size=batch_size,
+    shuffle=True)
 
 
 loader_dic=dict(
     trainloader=trainloader,
     testloader=testloader,
     )
-if 'gen_trainloader' in p.task_list:
-    gen_traindata = GenDataset(
-        root=p.gen_data_path,
-        transform=train_transform)
-    gen_trainloader = DataLoader(
-        gen_traindata, batch_size=p.batch_size, shuffle=True)
-    loader_dic['gen_trainloader']=gen_trainloader
 
-
-
-
-
-
-        
-#EOF
+classes = dict(
+    AJ=0,
+    PB=1,
+    other=2,
+    )
+if __name__ == '__main__':
+    it=iter(testloader)
+    ctr=0
+    while True:
+        try:
+            inputs,labels,files=next(it)
+            print(inputs.size(),labels,files)
+            q=1*inputs
+            q[0,0,0,0]=-1;q[0,0,0,1]=1
+            sh(q[0,:],1,r=0)
+            ctr+=1
+        except StopIteration:
+            print("Reached the end of the iterator.")
+            break
+    cg(ctr)
+##                                                                          ##
+##############################################################################
+##                                                                       ##

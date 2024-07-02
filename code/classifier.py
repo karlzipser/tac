@@ -80,7 +80,7 @@ for ig in range(10**20):
                         shuffle=True)
                 else:
                     if type(p.data_recorders[k].dataloader)==str:
-                        cg('adding dataloader for',k)
+                        cb('adding dataloader for',k)
                         p.data_recorders[k].dataloader=loader_dic[p.data_recorders[k].dataloader]
             
 
@@ -199,8 +199,11 @@ for ig in range(10**20):
                     f=[]
                     igs=[]
                     for pr in processed:
-                        f.append(pr['f1_scores'][classes[c]])
-                        igs.append(pr['ig'])
+                        if len(pr['f1_scores'])==len(classes):
+                            f.append(pr['f1_scores'][classes[c]])
+                            igs.append(pr['ig'])
+                        else:
+                            cE('here')
                     x=moving_average(igs,n)
                     y=moving_average(f,n)
                     plot(x,y,label=classes[c])
